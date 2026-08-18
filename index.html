@@ -266,7 +266,7 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
   display:flex;gap:12px;margin:10px 0 2px 22px;padding:10px;
   background:#EFF1EE;border:1px solid var(--rule);border-radius:2px;
 }
-.movesvg{flex:0 0 124px;width:124px;height:124px;background:linear-gradient(#FFFFFF,#F2F3F0);
+.movesvg{flex:0 1 124px;width:124px;max-width:38vw;height:124px;background:linear-gradient(#FFFFFF,#F2F3F0);
   border:1px solid var(--rule);border-radius:2px}
 .movesvg .gear{fill:none;stroke:#AFB4AD;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
 .movesvg .gearfill{fill:#DCDFDA;stroke:#AFB4AD;stroke-width:1.5}
@@ -342,7 +342,7 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
 .bars2{margin-top:4px}
 .grprow{display:flex;align-items:center;gap:9px;margin-bottom:7px}
 .grpname{
-  flex:0 0 104px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;
+  flex:0 1 104px;min-width:74px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--steel);
 }
 .grptrack{flex:1;height:14px;background:#E3E5E0;border-radius:2px;overflow:hidden}
@@ -352,6 +352,37 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
   flex:0 0 30px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink);
 }
 .flag{color:var(--warn);font-family:'IBM Plex Mono',monospace;font-size:11px}
+.cyclebtn{
+  appearance:none;width:100%;margin-top:9px;padding:9px;border:1px dashed var(--rule);
+  background:transparent;border-radius:2px;cursor:pointer;color:var(--steel);
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+}
+.cyclebtn.on{border-style:solid;border-color:#A8506B;background:#F7EDF1;color:#8C3A55}
+.phaseseg{display:flex;gap:0;margin-top:8px}
+.phaseseg button{
+  flex:1;background:#fff;border:1px solid var(--rule);color:var(--steel);cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.06em;
+  text-transform:uppercase;padding:9px 2px;line-height:1.2;
+}
+.phaseseg button[aria-pressed="true"]{background:#A8506B;border-color:#A8506B;color:#fff}
+.cycleline{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.06em;
+  color:#8C3A55;margin-top:7px}
+.cycleline b{font-weight:600}
+.wkchart{display:flex;align-items:flex-end;gap:4px;height:120px;border-bottom:1px solid var(--rule);margin-top:6px}
+.wkcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;height:100%}
+.wkbar{background:var(--pine);border-radius:1px 1px 0 0;min-height:2px}
+.wkbar.now{background:var(--brass)}
+.wkdot{height:3px;border-radius:2px;background:#A8506B;opacity:.55}
+.wklabels{display:flex;gap:4px;margin-top:4px}
+.wklabels span{flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;
+  font-size:8px;color:var(--steel)}
+.wktable{width:100%;border-collapse:collapse;margin-top:10px}
+.wktable th{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--steel);text-align:left;padding:5px 4px;
+  border-bottom:1px solid var(--rule);font-weight:500}
+.wktable td{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:7px 4px;
+  border-bottom:1px solid var(--rule)}
+.wktable td.ph{color:#8C3A55;font-weight:600}
 .recov{background:var(--paper);border:1px solid var(--rule);border-left:4px solid var(--steel);
   border-radius:2px;padding:11px 12px;margin-bottom:14px}
 .recov .lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;
@@ -1275,7 +1306,137 @@ function formPanel(name){
   return h;
 }
 
+/* ============ cycle tracking ============ */
+/* Logging only. The evidence does not support prescribing training by cycle phase,
+   so nothing here changes a single prescribed weight — it exists so patterns can be seen. */
+function cycleStarts(){
+  return Object.keys(state.sessions).filter(function(k){
+    return state.sessions[k].periodStart; }).sort();
+}
+
+function avgCycleLength(){
+  var st = cycleStarts();
+  if(st.length < 2) return 28;
+  var gaps = [];
+  for(var i=1;i<st.length;i++){
+    var g = Math.round((parseKey(st[i]) - parseKey(st[i-1])) / 86400000);
+    if(g >= 18 && g <= 45) gaps.push(g);
+  }
+  if(!gaps.length) return 28;
+  return Math.round(gaps.reduce(function(a,b){ return a+b; },0) / gaps.length);
+}
+
+function statedPhase(key){
+  var s = state.sessions[key];
+  return (s && s.phase) ? s.phase : '';
+}
+
+/* carry a stated phase forward for a few days, so one tap covers the days around it */
+function phaseFor(key){
+  var direct = statedPhase(key);
+  if(direct) return { phase:direct, stated:true };
+  var keys = Object.keys(state.sessions).filter(function(k){
+    return k <= key && state.sessions[k].phase; }).sort();
+  if(keys.length){
+    var last = keys[keys.length-1];
+    if(daysSince(last) - daysSince(key) <= 4){
+      return { phase:state.sessions[last].phase, stated:true, from:last };
+    }
+  }
+  var ci = cycleInfo(key);
+  return ci ? { phase:ci.phase, stated:false, day:ci.day } : null;
+}
+
+function cycleInfo(key){
+  var st = cycleStarts();
+  if(!st.length) return null;
+  var last = null;
+  st.forEach(function(k){ if(k <= key) last = k; });
+  if(!last) return null;
+  var day = Math.round((parseKey(key) - parseKey(last)) / 86400000) + 1;
+  var len = avgCycleLength();
+  if(day > len + 12) return null;                  /* stale — probably just not logged */
+  var phase;
+  if(day <= 5) phase = 'Menstrual';
+  else if(day <= Math.round(len*0.46)) phase = 'Follicular';
+  else if(day <= Math.round(len*0.57)) phase = 'Ovulatory';
+  else phase = 'Luteal';
+  return { day:day, phase:phase, len:len, start:last };
+}
+
+var PHASES = ['Menstrual','Follicular','Ovulatory','Luteal'];
+
+/* what her own numbers say, rather than what the internet says */
+function phaseComparison(){
+  var buckets = {};
+  PHASES.forEach(function(p){ buckets[p] = { sessions:0, vol:0, sets:0 }; });
+  var any = false;
+  Object.keys(state.sessions).forEach(function(k){
+    var s = state.sessions[k], st = sessionStats(s);
+    if(!st.sets) return;
+    var c = phaseFor(k);
+    if(!c || !buckets[c.phase]) return;
+    any = true;
+    var b = buckets[c.phase];
+    b.sessions++; b.vol += st.vol; b.sets += st.sets;
+  });
+  if(!any) return null;
+  PHASES.forEach(function(p){
+    var b = buckets[p];
+    b.avgVol = b.sessions ? Math.round(b.vol / b.sessions) : 0;
+    b.avgSets = b.sessions ? Math.round(b.sets / b.sessions) : 0;
+  });
+  return buckets;
+}
+
+/* ============ weekly summary ============ */
+function weekKey(k){
+  var d = parseKey(k);
+  d.setDate(d.getDate() - ((d.getDay() + 6) % 7));      /* back to Monday */
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+
+function weeklySummary(weeks){
+  var out = [], cursor = weekKey(todayKey());
+  for(var i=0;i<weeks;i++){ out.unshift({ k:cursor, vol:0, sets:0, sessions:0, cardio:0 }); cursor = shiftKey(cursor, -7); }
+  var index = {};
+  out.forEach(function(w){ index[w.k] = w; });
+  Object.keys(state.sessions).forEach(function(k){
+    var w = index[weekKey(k)];
+    if(!w) return;
+    var s = state.sessions[k], st = sessionStats(s);
+    if(!st.sets && !s.items) return;
+    if(st.sets){ w.sessions++; w.vol += st.vol; w.sets += st.sets; }
+    (s.items||[]).forEach(function(it){ if(it.kind === 'cardio') w.cardio += (+it.minutes||0); });
+  });
+  return out;
+}
+
 /* ============ recovery ============ */
+/* sleep is held as decimal hours but typed however feels natural: 7:13, 7h13, 7.2 or 7 */
+function parseSleep(v){
+  if(v === '' || v === null || v === undefined) return '';
+  var t = String(v).trim().toLowerCase().replace(/\s+/g, '');
+  if(!t) return '';
+  var m = t.match(/^(\d{1,2})[:h.'](\d{1,2})m?$/);      /* 7:13, 7h13, 7.13 as h.mm is ambiguous */
+  if(m && t.indexOf('.') < 0){
+    var hh = +m[1], mm = +m[2];
+    if(mm > 59) return '';
+    return Math.round((hh + mm/60) * 1000) / 1000;
+  }
+  var f = parseFloat(t);
+  if(isNaN(f)) return '';
+  if(f > 24) return Math.round((f/60) * 1000) / 1000;    /* typed it in minutes */
+  return f;
+}
+
+function fmtSleep(dec){
+  if(dec === '' || dec === null || dec === undefined || isNaN(+dec)) return '';
+  var total = Math.round(+dec * 60);
+  return Math.floor(total/60) + ':' + pad(total % 60);
+}
+
+
 function recoveryVerdict(s){
   var sl = +s.sleep || 0, rd = +s.ready || 0;
   if(!sl && !rd) return null;
@@ -2587,7 +2748,7 @@ function renderLog(){
     + '<option value="">— session type —</option>';
   TYPES.forEach(function(t){ h += '<option'+(s.type===t?' selected':'')+'>'+esc(t)+'</option>'; });
   h += '</select><div class="sh-stats">'
-    + '<span><b>'+st.sets+'</b> sets</span>'
+    + '<span><b>'+st.sets+'</b> set'+(st.sets===1?'':'s')+'</span>'
     + '<span><b>'+st.reps+'</b> reps</span>'
     + '<span><b>'+(st.vol?st.vol.toLocaleString():'—')+'</b> lb</span>'
     + '</div></div><div class="stackbar">'+plates+'</div></div>';
@@ -2608,12 +2769,33 @@ function renderLog(){
   h += '</div>';
 
   h += '<div class="recov"><div class="lbl">Recovery &mdash; from your ring or watch</div><div class="fields">'
-    + '<div class="fld"><span>Sleep hrs</span><input inputmode="decimal" data-act="rec" data-k="sleep" value="'+(s.sleep||'')+'" placeholder="\u2014"></div>'
+    + '<div class="fld"><span>Sleep h:mm</span><input type="text" inputmode="numeric" data-act="rec" data-k="sleep" '
+    + 'value="'+fmtSleep(s.sleep)+'" placeholder="7:13"></div>'
     + '<div class="fld"><span>Readiness</span><input inputmode="numeric" data-act="rec" data-k="ready" value="'+(s.ready||'')+'" placeholder="\u2014"></div>'
     + '<div class="fld"><span>Resting HR</span><input inputmode="numeric" data-act="rec" data-k="rhr" value="'+(s.rhr||'')+'" placeholder="\u2014"></div>'
     + '</div>';
   var rv = recoveryVerdict(s);
-  h += '<div class="verdict'+(rv && rv.warn ? ' warn' : '')+'">'+(rv ? esc(rv.text) : '')+'</div></div>';
+  h += '<div class="verdict'+(rv && rv.warn ? ' warn' : '')+'">'+(rv ? esc(rv.text) : '')+'</div>';
+
+  h += '<div class="phaseseg">';
+  PHASES.forEach(function(ph){
+    h += '<button data-act="phase" data-v="'+esc(ph)+'" aria-pressed="'+(s.phase===ph)+'">'
+      + esc(ph === 'Menstrual' ? 'Period' : ph) + '</button>';
+  });
+  h += '</div>';
+
+  var ci = cycleInfo(cur);
+  if(s.phase){
+    h += '<div class="cycleline"><b>'+esc(s.phase)+'</b> phase &middot; as reported by your ring'
+      + (ci && ci.day ? ' &middot; cycle day ' + ci.day : '') + '</div>';
+  } else if(ci){
+    h += '<div class="cycleline">Cycle day <b>'+ci.day+'</b> &middot; likely <b>'+esc(ci.phase.toLowerCase())
+      + '</b> phase &middot; estimated from a '+ci.len+'-day cycle</div>';
+  }
+
+  h += '<button class="cyclebtn'+(s.periodStart?' on':'')+'" data-act="period">'
+    + (s.periodStart ? '\u25cf Period started this day' : 'Mark period start \u2014 optional, only if you are not reading it off Oura')
+    + '</button></div>';
 
   var BACK = ['Fine','Aware','Achy','Sore'];
   h += '<div class="backcheck"><div class="lbl">Back check</div><div class="opts">';
@@ -2837,7 +3019,54 @@ function renderProgress(){
   var list = Object.keys(names).sort();
   if(!progressPick || list.indexOf(progressPick)<0) progressPick = list[0]||'';
 
-  var h = '<div class="eyebrow">Exercise history</div>';
+  var h = '';
+
+  var wk = weeklySummary(10);
+  var peakVol = Math.max.apply(null, wk.map(function(w){ return w.vol; }).concat([1]));
+  h += '<div class="eyebrow">Last 10 weeks</div><div class="wkchart">';
+  wk.forEach(function(w, i){
+    var hgt = Math.round(w.vol / peakVol * 108);
+    var hasPeriod = Object.keys(state.sessions).some(function(k){
+      return state.sessions[k].periodStart && weekKey(k) === w.k; });
+    h += '<div class="wkcol" title="'+w.vol.toLocaleString()+' lb">'
+      + '<div class="wkbar'+(i===wk.length-1?' now':'')+'" style="height:'+Math.max(hgt,2)+'px"></div>'
+      + (hasPeriod ? '<div class="wkdot"></div>' : '')
+      + '</div>';
+  });
+  h += '</div><div class="wklabels">';
+  wk.forEach(function(w){
+    var d = parseKey(w.k);
+    h += '<span>'+d.getDate()+'/'+(d.getMonth()+1)+'</span>';
+  });
+  h += '</div>';
+
+  var totalSessions = wk.reduce(function(a,w){ return a + w.sessions; }, 0);
+  var totalVol = wk.reduce(function(a,w){ return a + w.vol; }, 0);
+  var totalCardio = wk.reduce(function(a,w){ return a + w.cardio; }, 0);
+  var activeWeeks = wk.filter(function(w){ return w.sessions; }).length;
+  h += '<div class="footnote" style="margin-top:8px">Bar height is weekly volume in pounds lifted. '
+    + '<strong>'+totalSessions+'</strong> sessions over '+activeWeeks+' active weeks &middot; '
+    + '<strong>'+totalVol.toLocaleString()+' lb</strong> total &middot; '
+    + '<strong>'+totalCardio+' min</strong> cardio'
+    + (cycleStarts().length ? ' &middot; pink marks a week your period began.' : '.') + '</div>';
+
+  var pc = phaseComparison();
+  if(pc){
+    h += '<div class="eyebrow" style="margin-top:22px">Your own numbers by cycle phase</div>'
+      + '<table class="wktable"><thead><tr><th>Phase</th><th>Sessions</th><th>Avg sets</th><th>Avg volume</th></tr></thead><tbody>';
+    PHASES.forEach(function(ph){
+      var b = pc[ph];
+      h += '<tr><td class="ph">'+esc(ph)+'</td><td>'+b.sessions+'</td><td>'
+        + (b.sessions? b.avgSets : '\u2014')+'</td><td>'
+        + (b.sessions? b.avgVol.toLocaleString()+' lb' : '\u2014')+'</td></tr>';
+    });
+    h += '</tbody></table>'
+      + '<div class="footnote">Give this a few months before reading anything into it. Large reviews find '
+      + 'no consistent effect of cycle phase on strength, so nothing in this app changes your prescribed '
+      + 'weights by phase &mdash; but if a clear pattern shows up in <em>your</em> numbers, that is worth knowing.</div>';
+  }
+
+  h += '<div class="eyebrow" style="margin-top:22px">Exercise history</div>';
   if(!list.length){
     view.innerHTML = h + '<div class="empty"><strong>Nothing to chart yet</strong>Log a couple of sessions and progress shows up here.</div>';
     return;
@@ -3206,6 +3435,15 @@ view.addEventListener('click', function(e){
   }
   else if(a==='kind'){ newKind = b.dataset.v; render(); document.getElementById('newname').focus(); }
   else if(a==='rec'){ /* handled on input */ }
+  else if(a==='period'){
+    s.periodStart = !s.periodStart;
+    if(s.periodStart && !s.phase) s.phase = 'Menstrual';
+    save(); render();
+  }
+  else if(a==='phase'){
+    s.phase = (s.phase === b.dataset.v ? '' : b.dataset.v);
+    save(); render();
+  }
   else if(a==='back'){ s.back = (s.back===b.dataset.v ? '' : b.dataset.v); save(); render(); }
   else if(a==='form'){ openForm = (openForm===b.dataset.id ? '' : b.dataset.id); render(); }
   else if(a==='rxfocus'){ rxFocus = b.dataset.v; rxPlan = null; render(); }
@@ -3370,7 +3608,11 @@ view.addEventListener('input', function(e){
   else if(el.id === 'newname'){ renderSuggestions(el.value); }
   else if(a==='coach'){ s.coach = el.value; save(); }
   else if(a==='rec'){
-    s[el.dataset.k] = el.value === '' ? '' : +el.value;
+    if(el.dataset.k === 'sleep'){
+      s.sleep = parseSleep(el.value);
+    } else {
+      s[el.dataset.k] = el.value === '' ? '' : +el.value;
+    }
     save();
     var box = document.querySelector('.recov .verdict'), v = recoveryVerdict(s);
     if(box && v){ box.textContent = v.text; box.className = 'verdict' + (v.warn ? ' warn' : ''); }
@@ -3414,6 +3656,9 @@ view.addEventListener('change', function(e){
 view.addEventListener('focusout', function(e){
   var t = e.target;
   if(!t || !t.dataset || !t.dataset.act) return;
+  if(t.dataset.act === 'rec' && t.dataset.k === 'sleep'){
+    t.value = fmtSleep(session(cur).sleep);
+  }
   flush();
   if(t.dataset.act === 'set' && cur === todayKey() && +t.value > 0 && !rest){
     startRest(REST_DEFAULT);
