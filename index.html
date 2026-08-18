@@ -62,10 +62,10 @@ body{
 /* ---------- tabs ---------- */
 .tabs{display:flex;background:var(--pine);border-bottom:1px solid var(--pine-deep)}
 .tab{
-  flex:1;appearance:none;border:0;background:transparent;cursor:pointer;
-  font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;
-  letter-spacing:.12em;text-transform:uppercase;
-  color:rgba(248,248,245,.6);padding:14px 4px 12px;
+  flex:1;min-width:0;appearance:none;border:0;background:transparent;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13.5px;
+  letter-spacing:.08em;text-transform:uppercase;
+  color:rgba(248,248,245,.6);padding:14px 2px 12px;
   border-bottom:3px solid transparent;
 }
 .tab[aria-selected="true"]{color:#fff;border-bottom-color:var(--brass-lite)}
@@ -352,6 +352,49 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
   flex:0 0 30px;text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink);
 }
 .flag{color:var(--warn);font-family:'IBM Plex Mono',monospace;font-size:11px}
+.recov{background:var(--paper);border:1px solid var(--rule);border-left:4px solid var(--steel);
+  border-radius:2px;padding:11px 12px;margin-bottom:14px}
+.recov .lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--steel);margin-bottom:7px}
+.recov .fields{display:flex;gap:8px;flex-wrap:wrap}
+.recov .fld{flex:1;min-width:78px}
+.recov .fld span{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--steel);display:block;margin-bottom:3px}
+.recov input{width:100%;height:38px;text-align:center;border:1px solid var(--rule);border-radius:2px;
+  font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--ink);background:#fff}
+.recov input:focus{outline:2px solid var(--brass);outline-offset:-1px}
+.recov .verdict:empty{display:none}
+.recov .verdict{font-size:13.5px;line-height:1.45;color:#33383C;margin-top:9px}
+.recov .verdict.warn{color:var(--warn)}
+.nextbtn{
+  display:block;width:100%;margin-top:12px;padding:13px;border:1px solid var(--pine);
+  background:transparent;color:var(--pine);border-radius:2px;cursor:pointer;
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:15px;
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.nextbtn:hover{background:rgba(30,79,67,.07)}
+.nextwrap{background:var(--paper);border:1px solid var(--rule);border-top:3px solid var(--pine);
+  border-radius:2px;padding:13px;margin-top:10px}
+.nextstage{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--brass);margin-bottom:9px}
+.nextcard{display:flex;gap:9px;width:100%;text-align:left;background:transparent;cursor:pointer;
+  border:0;border-top:1px solid var(--rule);padding:10px 0;color:inherit;font:inherit;align-items:flex-start}
+.nextcard:hover{background:#F1F2EE}
+.nextrank{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brass);padding-top:3px}
+.nextname{font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:18px;
+  letter-spacing:.03em;text-transform:uppercase;display:block}
+.nextdose{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--pine);font-weight:600;display:block}
+.nextwhy{font-size:13.5px;line-height:1.45;color:var(--steel);display:block;margin-top:3px}
+.nextadd{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--brass);display:block;margin-top:4px}
+.nextrule{font-size:13px;line-height:1.5;color:var(--steel);margin-top:11px;
+  padding-top:10px;border-top:1px solid var(--rule)}
+.guide{background:var(--paper);border:1px solid var(--rule);border-left:4px solid var(--pine);
+  border-radius:2px;padding:11px 12px}
+.guide.cool{border-left-color:var(--brass)}
+.guide ul{margin:0 0 0 16px}
+.guide li{font-size:14px;line-height:1.5;color:#33383C;padding:2px 0}
+.guide p{font-size:13px;line-height:1.45;color:var(--steel);margin-top:8px}
 .finishbtn{
   display:block;width:100%;margin:18px 0 4px;padding:16px;border:0;border-radius:2px;cursor:pointer;
   background:var(--brass);color:#fff;
@@ -384,6 +427,39 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
 .rvblock.rec h4{color:var(--brass)}
 .rvblock ul{margin:0 0 0 15px}
 .rvblock li{font-size:14px;line-height:1.45;color:#33383C;padding:1.5px 0}
+.modebar{display:flex;margin-bottom:12px}
+.modebar button{
+  flex:1;background:var(--paper);border:1px solid var(--rule);color:var(--steel);
+  font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:13px;letter-spacing:.06em;
+  text-transform:uppercase;padding:9px 2px;cursor:pointer;
+}
+.modebar button[aria-pressed="true"]{background:var(--pine);border-color:var(--pine);color:#fff}
+.modebar button[data-v="rest"][aria-pressed="true"]{background:var(--steel);border-color:var(--steel)}
+.autotype{
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;
+  color:var(--brass-lite);margin-top:5px;
+}
+.mtags{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}
+.mtag{
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.04em;
+  border:1px solid var(--rule);background:var(--paper);border-radius:2px;padding:5px 7px;color:var(--ink);
+}
+.mtag.hot{background:#F3E4D8;border-color:#DCC0AA;color:#8C3A24}
+.mtag b{color:var(--steel);font-weight:500}
+.notebtn{
+  appearance:none;border:1px solid var(--rule);background:#fff;color:var(--steel);
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;letter-spacing:.1em;
+  padding:4px 7px;border-radius:2px;cursor:pointer;line-height:1;margin-top:3px;
+}
+.notebtn.has{background:var(--pine);border-color:var(--pine);color:#fff}
+.exnote{
+  width:calc(100% - 22px);margin:8px 0 2px 22px;background:#fff;border:1px solid var(--rule);
+  border-radius:2px;padding:9px;font-family:'Barlow',sans-serif;font-size:14px;color:var(--ink);
+}
+.exnote:focus{outline:2px solid var(--brass);outline-offset:-1px}
+.exnoteline{
+  margin:6px 0 0 22px;font-size:13.5px;color:#4A5054;line-height:1.4;font-style:italic;
+}
 .alarm{
   background:#F6EFEA;border:1px solid #DCC6B8;border-left:4px solid var(--warn);
   border-radius:2px;padding:12px;margin-bottom:14px;
@@ -529,6 +605,20 @@ button.rxrow[aria-expanded="true"]{background:#EFF1EE}
 .rxwhy.care{color:var(--warn)}
 .rxflag{background:#F6EFEA;border-left:3px solid var(--warn);padding:9px 11px;margin-bottom:10px;
   font-size:13.5px;line-height:1.45;color:#3A2E28}
+.whyhero{background:var(--pine-deep);color:var(--paper);border-radius:2px;padding:18px 16px;margin-bottom:18px}
+.whyeyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--brass-lite);margin-bottom:7px}
+.whyhero h2{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:27px;line-height:1.1;
+  letter-spacing:.03em;text-transform:uppercase;color:#fff}
+.whyhero p{font-size:14.5px;line-height:1.5;color:rgba(248,248,245,.78);margin-top:9px}
+.whycard{background:var(--paper);border:1px solid var(--rule);border-left:4px solid var(--pine);
+  border-radius:2px;padding:13px;margin-bottom:10px}
+.whycard.gain{border-left-color:var(--brass)}
+.whycard.last{border-left-color:var(--steel);background:#EFF1EE}
+.whycard h3{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--pine);margin-bottom:5px}
+.whycard.gain h3{color:#8A6512}
+.whycard p{font-size:14.5px;line-height:1.55;color:#33383C}
 .plan{background:var(--paper);border:1px solid var(--rule);border-radius:2px;
   padding:14px;margin-bottom:10px}
 .plan h3{
@@ -564,6 +654,7 @@ button.rxrow[aria-expanded="true"]{background:#EFF1EE}
     <button class="tab" role="tab" data-tab="history" aria-selected="false">History</button>
     <button class="tab" role="tab" data-tab="progress" aria-selected="false">Progress</button>
     <button class="tab" role="tab" data-tab="plan" aria-selected="false">Plan</button>
+    <button class="tab" role="tab" data-tab="why" aria-selected="false">Why</button>
   </nav>
   <main id="view"></main>
 </div>
@@ -588,6 +679,8 @@ var pasteOpen = false;
 var openForm = '';
 var backupOpen = false;
 var reviewFor = '';
+var openNote = '';
+var nextOpen = false;
 var rxFocus = 'auto', rxMin = 45, rxMode = 'steady', rxPlan = null, rxOpen = '';
 var saveTimer = null;
 
@@ -1182,6 +1275,236 @@ function formPanel(name){
   return h;
 }
 
+/* ============ recovery ============ */
+function recoveryVerdict(s){
+  var sl = +s.sleep || 0, rd = +s.ready || 0;
+  if(!sl && !rd) return null;
+  if((rd && rd < 65) || (sl && sl < 6)){
+    return { warn:true, text:'Short on recovery. Keep the loads where they were, cut a set from the '
+      + 'accessories, and let the walk do the extra work. Pushing for a record today costs more than it buys.' };
+  }
+  if((rd && rd >= 85) || (sl && sl >= 8)){
+    return { warn:false, text:'Well recovered. This is the day to go after a heavier top set.' };
+  }
+  return { warn:false, text:'Normal recovery. Train as planned and let the numbers decide.' };
+}
+
+function recoveryMode(){
+  var keys = Object.keys(state.sessions).sort().reverse();
+  for(var i=0;i<keys.length;i++){
+    var s = state.sessions[keys[i]];
+    if(s.sleep || s.ready){
+      if(daysSince(keys[i]) > 1) return null;
+      if((+s.ready && +s.ready < 65) || (+s.sleep && +s.sleep < 6)) return 'low';
+      if((+s.ready && +s.ready >= 85) || (+s.sleep && +s.sleep >= 8)) return 'high';
+      return 'normal';
+    }
+  }
+  return null;
+}
+
+/* ============ what to do next ============ */
+var COMPOUND = {vpull:1,hpull:1,hpress:1,vpress:1,legpress:1,squat:1,lunge:1,hinge:1,pushup:1};
+/* the movements that genuinely deserve to go first */
+var OPENERS = ['Lat pull down','Wide grip lat pull down','Close grip lat pull down','Pull up','Assisted pull up',
+'Seated row','Chest supported row','T-bar row','Bent over row','Chest press machine','Incline chest press',
+'Bench press','Dumbbell bench press','Shoulder press machine','Dumbbell shoulder press','Leg press','Hack squat',
+'Squats','Goblet squat','Bulgarian split squat','Romanian deadlift','Walking lunges','Reverse lunge'];
+/* light accessories that should never open a session */
+var LATE_ONLY = ['Back extension','Glute cable kickback','Hip abduction','Hip adduction','Glute extension',
+'Seated calf raise','Standing calf raise','Face pull','Lateral raise','Front shoulder raise'];
+var ISO      = {fly:1,curl:1,tri:1,raise:1,legext:1,legcurl:1,abduction:1,calf:1};
+var CORE_K   = {plank:1,core:1,rollout:1};
+
+var ORDER_RULE = 'Big movements first, small ones after, core near the end and walking last. '
+  + 'Compound lifts need the most co-ordination and the freshest you, and tiring the small muscles early '
+  + 'means they give out before the big ones get their work.';
+
+function regionOf(name){
+  var m = MUSCLES[moveKey(name)];
+  return m && m.p.length ? (REGION[m.p[0]] || 'Other') : 'Other';
+}
+
+function nextUp(sess){
+  var t = muscleTally(sess), reg = t.regions;
+  var items = (sess.items||[]);
+  var doneNames = {}, lastLift = null, nCompound = 0, nIso = 0, nCore = 0, nLift = 0;
+
+  items.forEach(function(it){
+    doneNames[it.name.toLowerCase()] = 1;
+    var k = moveKey(it.name);
+    if(it.kind === 'cardio') return;
+    nLift++;
+    if(COMPOUND[k]) nCompound++;
+    if(ISO[k]) nIso++;
+    if(CORE_K[k]) nCore++;
+    lastLift = k;
+  });
+
+  var back = recentBack();
+  var guard = (back === 'Achy' || back === 'Sore');
+  var tenDay = groupTally(10);
+
+  /* only suggest from the curated list — custom one-off names make poor recommendations */
+  var pool = LIBRARY.filter(function(n){
+    return MUSCLES[moveKey(n)] && !doneNames[n.toLowerCase()] && guessKind(n) !== 'hold';
+  });
+
+  var scored = [];
+  pool.forEach(function(n){
+    var k = moveKey(n), r = regionOf(n), sc = 0;
+    var lastR = lastLift && MUSCLES[lastLift] ? (REGION[MUSCLES[lastLift].p[0]] || '') : '';
+    var todayVol = reg[r] || 0;
+    var isOpener = OPENERS.indexOf(n) > -1;
+    var lateOnly = LATE_ONLY.indexOf(n) > -1;
+    var reasons = [];
+
+    if(k === 'walk'){
+      if(nLift < 4) return;
+      scored.push({ n:n, k:k, r:r, sc:40,
+        why:'Finish on the treadmill \u2014 cardio belongs after the weights, not before.' });
+      return;
+    }
+
+    /* --- scoring --- */
+    if(lateOnly && nLift < 2) sc -= 30;
+
+    if(COMPOUND[k] && isOpener)      sc += (nCompound < 2) ? 36 : 12;
+    else if(COMPOUND[k])             sc += (nCompound < 2) ? 16 : 10;
+    else if(CORE_K[k]){ if(nLift < 3) return; sc += 26; }
+    else                             sc += (nCompound >= 1) ? 24 : 6;
+
+    if(todayVol === 0)      sc += 22;
+    else if(todayVol < 4)   sc += 8;
+    else                    sc -= 12;
+
+    if(lastR && r === lastR) sc += (todayVol >= 6) ? -18 : 4;
+
+    var PUSH_REG = ['Chest','Shoulders'], PULL_REG = ['Back'];
+    var opposing = (PUSH_REG.indexOf(lastR) > -1 && PULL_REG.indexOf(r) > -1)
+                || (PULL_REG.indexOf(lastR) > -1 && PUSH_REG.indexOf(r) > -1);
+    if(opposing) sc += 14;
+
+    var gm = { Back:'Back', Chest:'Chest', Shoulders:'Shoulders', Arms:'Arms',
+               Legs:'Legs', Glutes:'Glutes & hams', Hamstrings:'Glutes & hams', Core:'Core' }[r];
+    var vol10 = gm ? (tenDay[gm] || 0) : 99;
+    if(gm) sc += Math.max(0, 18 - vol10 * 2);
+
+    if(guard && (k === 'hinge' || k === 'squat' || k === 'rollout' || k === 'core')) sc -= 40;
+
+    var p = prescribe(n, 'steady');
+    if(prevAny(n, shiftKey(todayKey(), 1))) sc += 10; else sc -= 4;
+    if(p.load) sc += 6;                       /* a known weight beats a guess */
+
+    /* --- the reason, chosen by what matters most at this point --- */
+    var why;
+    if(opposing){
+      why = (PULL_REG.indexOf(r) > -1)
+        ? 'You have just pressed \u2014 pulling next balances the shoulder and lets the chest recover.'
+        : 'You have just pulled \u2014 pressing next works the opposite side while your back rests.';
+    } else if(CORE_K[k]){
+      why = 'Core work belongs near the end, so it does not tire your trunk before the loaded lifts.';
+    } else if(todayVol === 0 && nLift >= 1){
+      why = 'Nothing today has touched your ' + r.toLowerCase() + ' yet.';
+    } else if(nLift <= 2 && isOpener){
+      why = 'A big movement while you are still fresh \u2014 these deserve your best effort.';
+    } else if(vol10 <= 2){
+      why = 'Your ' + r.toLowerCase() + ' had almost nothing in the last fortnight.';
+    } else if(COMPOUND[k]){
+      why = 'A solid compound choice for what you have left.';
+    } else {
+      why = 'Rounds out the ' + r.toLowerCase() + ' work you have started.';
+    }
+
+    scored.push({ n:n, k:k, r:r, sc:sc, why:why, p:p });
+  });
+
+  scored.sort(function(a,b){ return b.sc - a.sc || a.n.localeCompare(b.n); });
+
+  /* three genuinely different options, not three rows */
+  var out = [], seenRegion = {};
+  function take(c){
+    var p = c.p || prescribe(c.n, 'steady');
+    out.push({
+      name: c.n, region: c.r, why: c.why,
+      dose: (COMPOUND[c.k] ? '3 \u00d7 8-12' : (CORE_K[c.k] ? '3 \u00d7 30-45 sec' : '3 \u00d7 10-15'))
+            + (p.load ? ' @ ' + p.load + ' lb'
+               : (p.load === 0 ? ' @ bodyweight' : ' \u2014 find your weight')),
+      load: p.load, note: p.why
+    });
+  }
+  scored.forEach(function(c){
+    if(out.length >= 3 || seenRegion[c.r]) return;
+    seenRegion[c.r] = 1; take(c);
+  });
+  scored.forEach(function(c){                 /* top up if the pool was thin */
+    if(out.length >= 3) return;
+    if(out.some(function(o){ return o.name === c.n; })) return;
+    take(c);
+  });
+
+  var stage = !nLift ? 'Start of the session'
+    : (nLift <= 2 ? 'Still early \u2014 big movements first'
+    : (nLift <= 5 ? 'Middle of the session' : 'Towards the end'));
+
+  return { list: out, stage: stage, guard: guard,
+           done: nLift, compounds: nCompound, iso: nIso, core: nCore };
+}
+
+/* ============ warm-up & stretching ============ */
+/* warm-up keyed to what is planned; stretching keyed to what was actually worked */
+var WARMUP = {
+  Back:      ['Band or cable pull-apart \u00d7 15','One light pulldown set \u00d7 12 at half your working weight'],
+  Chest:     ['Arm circles forwards and back \u00d7 10 each','Wall or incline push-up \u00d7 10'],
+  Shoulders: ['Shoulder rolls \u00d7 10 each way','Empty-hand overhead reach \u00d7 10'],
+  Arms:      ['One very light curl and pushdown set \u00d7 15'],
+  Legs:      ['Bodyweight squat to a box \u00d7 10','Leg extension \u00d7 15 very light','Ankle circles \u00d7 10 each'],
+  Glutes:    ['Glute bridge \u00d7 12','Standing hip circles \u00d7 8 each way'],
+  Hamstrings:['Hip hinge with no weight \u00d7 10, hands on your hips','Leg swings front to back \u00d7 10 each'],
+  Core:      ['Dead bug \u00d7 6 each side','Cat-cow \u00d7 8 slow']
+};
+
+var STRETCH = {
+  Back:      ['Child\u2019s pose with long arms \u2014 40 sec','Seated spinal twist \u2014 30 sec each side'],
+  Chest:     ['Doorway chest stretch \u2014 30 sec each arm','Hands clasped behind your back, lift gently \u2014 30 sec'],
+  Shoulders: ['Cross-body shoulder stretch \u2014 30 sec each','Overhead reach down your spine \u2014 30 sec each'],
+  Arms:      ['Overhead triceps stretch \u2014 30 sec each','Arm straight on a wall, turn away for the biceps \u2014 30 sec each'],
+  Legs:      ['Standing quad stretch, hold something \u2014 30 sec each','Kneeling hip flexor stretch \u2014 40 sec each','Calf stretch against a wall \u2014 30 sec each'],
+  Glutes:    ['Figure-four glute stretch lying on your back \u2014 40 sec each','Seated cross-leg glute stretch \u2014 30 sec each'],
+  Hamstrings:['Hamstring stretch with a flat back, foot on a bench \u2014 40 sec each','Lying hamstring stretch with a strap or towel \u2014 40 sec each'],
+  Core:      ['Gentle cat-cow \u2014 8 slow rounds','Knees to chest on your back \u2014 30 sec'],
+  Conditioning:['Easy flat walking for 2 min until your breathing settles']
+};
+
+var STRETCH_NOTE = 'Hold each one steady and breathe. No bouncing, and nothing should be sharp \u2014 '
+  + 'a stretch you have to brace against is too far, especially through the lower back.';
+
+function regionsWorked(sess){
+  var reg = muscleTally(sess).regions;
+  var keys = Object.keys(reg).filter(function(r){ return r !== 'Conditioning' && reg[r] >= 1; })
+    .sort(function(a,b){ return reg[b] - reg[a]; });
+  if(!keys.length) return [];
+  var top = reg[keys[0]];
+  return keys.filter(function(r){ return reg[r] >= top*0.3; }).slice(0,3);
+}
+
+function warmupFor(sess){
+  var out = ['5 min incline walk at 2.2\u20132.4 mph \u2014 warm, not tired'];
+  regionsWorked(sess).forEach(function(r){
+    (WARMUP[r]||[]).forEach(function(x){ if(out.indexOf(x) < 0) out.push(x); });
+  });
+  if(out.length === 1) out.push('Add a light set of your first exercise before the working sets.');
+  return out.slice(0,5);
+}
+
+function stretchFor(sess){
+  var out = [];
+  regionsWorked(sess).forEach(function(r){
+    (STRETCH[r]||[]).forEach(function(x){ if(out.indexOf(x) < 0) out.push(x); });
+  });
+  return out.slice(0,6);
+}
+
 /* ============ session review ============ */
 function reviewSession(key){
   var s = session(key), st = sessionStats(s);
@@ -1461,6 +1784,110 @@ document.getElementById('rest').addEventListener('click', function(e){
   if(rest){ rest.end += (+v)*1000; tickRest(); }
 });
 
+/* ============ muscles & session naming ============ */
+/* primary muscles score 1 per set, supporting muscles 0.4 */
+var MUSCLES = {
+  vpull:  { p:['Lats','Mid-back'],              s:['Biceps','Rear delts','Forearms'] },
+  hpull:  { p:['Mid-back','Rhomboids'],         s:['Lats','Rear delts','Biceps'] },
+  hpress: { p:['Chest'],                        s:['Front delts','Triceps'] },
+  vpress: { p:['Front delts'],                  s:['Triceps','Upper chest','Deep core'] },
+  fly:    { p:['Chest'],                        s:['Front delts'] },
+  curl:   { p:['Biceps'],                       s:['Forearms'] },
+  tri:    { p:['Triceps'],                      s:[] },
+  raise:  { p:['Side delts'],                   s:['Front delts','Traps'] },
+  hinge:  { p:['Hamstrings','Glutes'],          s:['Spinal erectors','Mid-back'] },
+  squat:  { p:['Quads','Glutes'],               s:['Adductors','Deep core','Calves'] },
+  lunge:  { p:['Quads','Glutes'],               s:['Adductors','Hamstrings','Deep core'] },
+  legpress:{p:['Quads','Glutes'],               s:['Hamstrings','Adductors'] },
+  legcurl:{ p:['Hamstrings'],                   s:['Calves'] },
+  legext: { p:['Quads'],                        s:[] },
+  abduction:{p:['Glute medius'],                s:['Glutes'] },
+  calf:   { p:['Calves'],                       s:[] },
+  pushup: { p:['Chest','Triceps'],              s:['Front delts','Deep core'] },
+  plank:  { p:['Deep core','Abs'],              s:['Glutes','Front delts'] },
+  rollout:{ p:['Abs','Deep core'],              s:['Lats','Front delts'] },
+  core:   { p:['Abs','Hip flexors'],            s:['Deep core'] },
+  walk:   { p:['Heart & lungs'],                s:['Calves','Glutes'] }
+};
+
+/* which broad region each muscle belongs to */
+var REGION = {
+  'Lats':'Back','Mid-back':'Back','Rhomboids':'Back','Rear delts':'Back','Spinal erectors':'Back','Traps':'Back',
+  'Chest':'Chest','Upper chest':'Chest',
+  'Front delts':'Shoulders','Side delts':'Shoulders',
+  'Biceps':'Arms','Triceps':'Arms','Forearms':'Arms',
+  'Quads':'Legs','Adductors':'Legs','Calves':'Legs',
+  'Glutes':'Glutes','Glute medius':'Glutes','Hamstrings':'Hamstrings',
+  'Abs':'Core','Deep core':'Core','Hip flexors':'Core',
+  'Heart & lungs':'Conditioning'
+};
+
+function muscleTally(s){
+  var m = {}, reg = {};
+  (s.items||[]).forEach(function(it){
+    var done = (it.sets||[]).filter(function(r){ return +r>0; }).length;
+    if(it.kind === 'cardio') done = (+it.minutes>0) ? 1 : 0;
+    if(!done) return;
+    var key = moveKey(it.name), map = MUSCLES[key];
+    if(!map) return;
+    map.p.forEach(function(n){ m[n] = (m[n]||0) + done; });
+    map.s.forEach(function(n){ m[n] = (m[n]||0) + done*0.4; });
+  });
+  Object.keys(m).forEach(function(n){
+    m[n] = Math.round(m[n]*10)/10;
+    var r = REGION[n] || 'Other';
+    reg[r] = Math.round(((reg[r]||0) + m[n])*10)/10;
+  });
+  return { muscles:m, regions:reg };
+}
+
+/* names the session from what was actually logged */
+var UPPER_R = ['Back','Chest','Shoulders','Arms'];
+var LOWER_R = ['Legs','Glutes','Hamstrings'];
+
+function detectType(s){
+  if(s.mode === 'rest') return { label:'Rest day', detail:'recovery', regions:{}, muscles:{} };
+  var t = muscleTally(s), reg = t.regions;
+  var sum = function(list){ return list.reduce(function(a,r){ return a + (reg[r]||0); }, 0); };
+  var up = sum(UPPER_R), lo = sum(LOWER_R), core = reg['Core'] || 0;
+  var tot = up + lo + core;
+
+  if(!tot){
+    return (reg['Conditioning'])
+      ? { label:'Cardio', detail:'conditioning only', regions:reg, muscles:t.muscles }
+      : { label:'', detail:'', regions:{}, muscles:{} };
+  }
+
+  var label;
+  if(up/tot >= 0.20 && lo/tot >= 0.20){
+    label = 'Full body';
+  } else if(lo > up){
+    var quad = reg['Legs'] || 0, post = (reg['Glutes']||0) + (reg['Hamstrings']||0);
+    label = (post > quad*1.4) ? 'Glutes & hamstrings' : (quad > post*1.6 ? 'Quads' : 'Legs');
+  } else if(up >= core){
+    var back = reg['Back'] || 0, push = (reg['Chest']||0) + (reg['Shoulders']||0), arms = reg['Arms'] || 0;
+    if(back >= up*0.28 && push >= up*0.28)      label = 'Upper body';
+    else if(back > push && back > arms)         label = 'Pull';
+    else if(push > back && push > arms)         label = (reg['Chest']||0) >= (reg['Shoulders']||0) ? 'Push' : 'Shoulders';
+    else                                         label = 'Arms';
+  } else {
+    label = 'Core';
+  }
+
+  var detail = Object.keys(reg)
+    .filter(function(r){ return r !== 'Conditioning' && reg[r] >= tot*0.15; })
+    .sort(function(a,b){ return reg[b] - reg[a]; })
+    .slice(0,4).map(function(r){ return r.toLowerCase(); }).join(' + ');
+
+  return { label:label, detail:detail, regions:reg, muscles:t.muscles };
+}
+
+function sessionLabel(s){
+  if(s.typeManual && s.type) return s.type;
+  var d = detectType(s);
+  return d.label || s.type || 'Untitled';
+}
+
 /* ---- muscle groups ---- */
 var GROUP_OF = {
   vpull:'Back', hpull:'Back',
@@ -1671,6 +2098,12 @@ function designSession(opts){
   var mode = opts.mode, mins = opts.minutes;
   var back = recentBack();
   var flags = [];
+
+  var rec = recoveryMode();
+  if(rec === 'low' && mode === 'hard'){
+    mode = 'steady';
+    flags.push('Your sleep or readiness was low, so this is the steady version rather than a push day.');
+  }
 
   if(back === 'Achy' || back === 'Sore'){
     if(mode !== 'easy'){ mode = 'easy'; flags.push('Your last back check said "'+back+'", so this is the eased version.'); }
@@ -2131,7 +2564,8 @@ function render(){
   if(tab==='log') renderLog();
   else if(tab==='history') renderHistory();
   else if(tab==='progress') renderProgress();
-  else renderPlan();
+  else if(tab==='plan') renderPlan();
+  else renderWhy();
 }
 
 function renderLog(){
@@ -2165,6 +2599,22 @@ function renderLog(){
       + '<button class="btn btn-solid btn-wide" data-act="download">Download backup file</button></div>';
   }
 
+  var det = detectType(s);
+
+  h += '<div class="modebar">';
+  [['solo','Solo'],['trainer','With trainer'],['rest','Rest day']].forEach(function(o){
+    h += '<button data-act="mode" data-v="'+o[0]+'" aria-pressed="'+((s.mode||'solo')===o[0])+'">'+esc(o[1])+'</button>';
+  });
+  h += '</div>';
+
+  h += '<div class="recov"><div class="lbl">Recovery &mdash; from your ring or watch</div><div class="fields">'
+    + '<div class="fld"><span>Sleep hrs</span><input inputmode="decimal" data-act="rec" data-k="sleep" value="'+(s.sleep||'')+'" placeholder="\u2014"></div>'
+    + '<div class="fld"><span>Readiness</span><input inputmode="numeric" data-act="rec" data-k="ready" value="'+(s.ready||'')+'" placeholder="\u2014"></div>'
+    + '<div class="fld"><span>Resting HR</span><input inputmode="numeric" data-act="rec" data-k="rhr" value="'+(s.rhr||'')+'" placeholder="\u2014"></div>'
+    + '</div>';
+  var rv = recoveryVerdict(s);
+  h += '<div class="verdict'+(rv && rv.warn ? ' warn' : '')+'">'+(rv ? esc(rv.text) : '')+'</div></div>';
+
   var BACK = ['Fine','Aware','Achy','Sore'];
   h += '<div class="backcheck"><div class="lbl">Back check</div><div class="opts">';
   BACK.forEach(function(b){
@@ -2186,6 +2636,8 @@ function renderLog(){
       + '<h3>'+esc(it.name)+'</h3>'
       + '<button class="formbtn" data-act="form" data-id="'+it.id+'" aria-expanded="'+(openForm===it.id)+'" '
       + 'aria-label="Show how to do '+esc(it.name)+'">FORM</button>'
+      + '<button class="notebtn'+(it.note?' has':'')+'" data-act="notetoggle" data-id="'+it.id+'" '
+      + 'aria-label="Note for '+esc(it.name)+'">NOTE</button>'
       + (it.kind==='cardio' ? '' :
          '<button class="ssbadge'+(it.ss?'':' off')+'" data-act="ss" data-id="'+it.id+'" '
          + 'aria-label="Superset group">'+(it.ss ? 'SS '+esc(it.ss) : 'SS')+'</button>')
@@ -2196,6 +2648,13 @@ function renderLog(){
       + (pr ? '<span class="prbadge">PR &middot; '+esc(pr)+'</span>' : '') + '</div>';
 
     if(openForm===it.id) h += formPanel(it.name);
+
+    if(openNote === it.id){
+      h += '<input class="exnote" data-act="exnote" data-id="'+it.id+'" value="'+esc(it.note||'')+'" '
+        + 'placeholder="Seat at 4, felt it in the left shoulder, machine was taken\u2026">';
+    } else if(it.note){
+      h += '<div class="exnoteline">'+esc(it.note)+'</div>';
+    }
 
     if(it.tgt) h += '<div class="lastline">Target &middot; <b>'+esc(it.tgt)+'</b></div>';
 
@@ -2209,6 +2668,7 @@ function renderLog(){
         + '<label>Min</label><input class="num" inputmode="decimal" value="'+(it.minutes||'')+'" data-act="f" data-id="'+it.id+'" data-k="minutes">'
         + '<label>Incline</label><input class="num" inputmode="decimal" value="'+(it.incline||'')+'" data-act="f" data-id="'+it.id+'" data-k="incline">'
         + '<label>Mph</label><input class="num" inputmode="decimal" value="'+(it.speed||'')+'" data-act="f" data-id="'+it.id+'" data-k="speed">'
+        + '<label>Avg HR</label><input class="num" inputmode="numeric" value="'+(it.hr||'')+'" data-act="f" data-id="'+it.id+'" data-k="hr">'
         + '</div>';
     } else {
       if(it.kind==='hold'){
@@ -2280,6 +2740,46 @@ function renderLog(){
       + 'then a rest before repeating. Tap SS on both exercises until they show the same letter to pair them.</div>';
   }
 
+  if(s.mode !== 'rest'){
+    h += '<button class="nextbtn" data-act="nextup">'
+      + (nextOpen ? 'Hide suggestions' : 'What should I do next?') + '</button>';
+    if(nextOpen){
+      var nx = nextUp(s);
+      h += '<div class="nextwrap"><div class="nextstage">'+esc(nx.stage)
+        + ' &middot; ' + nx.done + ' exercise' + (nx.done===1?'':'s') + ' in</div>';
+      if(nx.guard){
+        h += '<div class="rxflag">Your last back check was not great, so hinging and loaded squatting '
+          + 'have been pushed down the list.</div>';
+      }
+      if(!nx.list.length){
+        h += '<div class="nextwhy">Nothing obvious left — you have covered a lot today. '
+          + 'Finish with a walk and stretch.</div>';
+      }
+      nx.list.forEach(function(c, i){
+        h += '<button class="nextcard" data-act="addnext" data-n="'+esc(c.name)+'" data-l="'+(c.load===null?'':c.load)+'">'
+          + '<span class="nextrank">'+pad(i+1)+'</span><span style="flex:1;min-width:0">'
+          + '<span class="nextname">'+esc(c.name)+'</span>'
+          + '<span class="nextdose">'+esc(c.dose)+'</span>'
+          + '<span class="nextwhy">'+esc(c.why)+'</span>'
+          + '<span class="nextadd">Tap to add</span>'
+          + '</span></button>';
+      });
+      h += '<div class="nextrule"><strong>Why this order:</strong> '+esc(ORDER_RULE)+'</div></div>';
+    }
+  }
+
+  if(s.items.length && s.mode !== 'rest'){
+    var wu = warmupFor(s), stx = stretchFor(s);
+    h += '<div class="eyebrow">Before you start</div><div class="guide warm"><ul>';
+    wu.forEach(function(x){ h += '<li>'+esc(x)+'</li>'; });
+    h += '</ul></div>';
+    if(stx.length){
+      h += '<div class="eyebrow">After — stretch what you worked</div><div class="guide cool"><ul>';
+      stx.forEach(function(x){ h += '<li>'+esc(x)+'</li>'; });
+      h += '</ul><p>'+esc(STRETCH_NOTE)+'</p></div>';
+    }
+  }
+
   if(s.items.length){
     h += '<button class="finishbtn" data-act="finish">'
       + (reviewFor === cur ? 'Hide review' : 'Workout finished') + '</button>';
@@ -2314,7 +2814,9 @@ function renderHistory(){
     var tail = (st.sets >= exCount) ? (st.sets + ' sets') : (exCount + ' ex \u00b7 ' + st.sets + ' set' + (st.sets===1?'':'s'));
     h += '<button class="row" data-act="open" data-k="'+k+'">'
       + '<span class="rdate">'+fmtShort(k)+'</span>'
-      + '<span class="rtype">'+esc(s.type||'Untitled')+'</span>'
+      + '<span class="rtype">'+esc(sessionLabel(s))
+      + (s.mode==='trainer' ? ' <span class="spat">trainer</span>' : '')
+      + (s.mode==='rest' ? ' <span class="spat">rest</span>' : '')+'</span>'
       + '<span class="rsets">'+((s.back==='Achy'||s.back==='Sore')?'<span class="flag">\u25cf </span>':'')+tail+'</span></button>';
   });
 
@@ -2401,6 +2903,121 @@ function renderProgress(){
           + 'Red bars are the ones to feed next.'
         : 'Reasonably even across the board over the last two weeks.')
     + '</div>';
+
+  view.innerHTML = h;
+}
+
+
+function renderWhy(){
+  var keys = Object.keys(state.sessions).filter(function(k){
+    return (state.sessions[k].items||[]).length; }).sort();
+  var sessions = keys.length;
+  var sets = 0, reps = 0, vol = 0, cardio = 0, mus = {};
+  keys.forEach(function(k){
+    var s = state.sessions[k], st = sessionStats(s);
+    sets += st.sets; reps += st.reps; vol += st.vol;
+    (s.items||[]).forEach(function(it){ if(it.kind==='cardio') cardio += (+it.minutes||0); });
+    var m = muscleTally(s).muscles;
+    Object.keys(m).forEach(function(n){ mus[n] = (mus[n]||0) + m[n]; });
+  });
+  var span = keys.length ? Math.max(1, Math.round((parseKey(keys[keys.length-1]) - parseKey(keys[0]))/86400000)+1) : 0;
+  var perWeek = span ? Math.round(sessions/span*7*10)/10 : 0;
+
+  var prs = [];
+  keys.forEach(function(k){
+    (state.sessions[k].items||[]).forEach(function(it){
+      var p = isPR(it, k);
+      if(p) prs.push(it.name);
+    });
+  });
+
+  var heaviest = [];
+  var names = {};
+  keys.forEach(function(k){ (state.sessions[k].items||[]).forEach(function(it){
+    if(it.kind==='lift') names[it.name] = true; }); });
+  Object.keys(names).forEach(function(n){
+    var b = bestEver(n, null);
+    if(b.load) heaviest.push({ n:n, l:b.load, r:b.reps });
+  });
+  heaviest.sort(function(a,b){ return b.l - a.l; });
+
+  var h = '<div class="whyhero">'
+    + '<div class="whyeyebrow">Where you are</div>'
+    + '<h2>'+sessions+' sessions, '+sets+' working sets, '
+    + (vol>=1000 ? Math.round(vol/1000)+',000' : vol) + ' pounds moved.</h2>'
+    + '<p>Over '+span+' days, averaging '+perWeek+' sessions a week, plus '+cardio+' minutes of walking. '
+    + 'That is not a small thing after years away from a gym.</p></div>';
+
+  h += '<div class="eyebrow">What we actually built</div>'
+    + '<div class="whycard"><h3>A record instead of a memory</h3>'
+    + '<p>The single reason people stall is that they cannot remember what they lifted last time, so they '
+    + 'lift the same thing forever. Every exercise here shows you last week\'s numbers before you start. '
+    + 'That one line is what turns exercise into training.</p></div>';
+
+  h += '<div class="whycard"><h3>Progressive overload, calculated for you</h3>'
+    + '<p>Muscle adapts to a demand slightly beyond what it has met before. Slightly. The Plan tab reads what you '
+    + 'actually did and asks for a little more \u2014 ten percent when you sailed through fifteen reps, nothing at all '
+    + 'when you scraped through eight. That judgement is the whole job of a coach, and it is now written down '
+    + 'rather than guessed.</p></div>';
+
+  h += '<div class="whycard"><h3>A spine that is protected, not avoided</h3>'
+    + '<p>Your disc history shaped every choice in here. No barbell back squats, no conventional deadlifts, '
+    + 'machines and supported positions where possible, core work that resists movement rather than crunching '
+    + 'through it. Not because loading is dangerous \u2014 because the wrong loading is, and the right loading is '
+    + 'the best protection you can buy. The strongest thing you can do for a vulnerable back is build the hips, '
+    + 'glutes and trunk around it.</p></div>';
+
+  h += '<div class="whycard"><h3>Warning signs written down before you need them</h3>'
+    + '<p>The back check takes one tap. If a flare ever comes, the fortnight before it will be readable \u2014 '
+    + 'what you loaded, what jumped, how you felt. And the flare protocol in the Plan tab was written while '
+    + 'nothing hurt, which is the only time anyone thinks clearly about it.</p></div>';
+
+  h += '<div class="eyebrow">What this earns you</div>';
+
+  h += '<div class="whycard gain"><h3>Muscle kept while fat goes</h3>'
+    + '<p>In a calorie deficit the body will take weight from wherever it likes, including muscle. Lifting is the '
+    + 'signal that says keep this. Two people can lose the same twenty pounds and end up in completely different '
+    + 'bodies; the difference is almost entirely whether they trained while they did it.</p></div>';
+
+  h += '<div class="whycard gain"><h3>A metabolism that does not sink</h3>'
+    + '<p>Muscle is expensive tissue to keep. Lose it and your maintenance calories fall, which is why weight lost '
+    + 'through diet alone tends to come back. Holding your muscle holds the floor under everything.</p></div>';
+
+  h += '<div class="whycard gain"><h3>Bone, joints and the next forty years</h3>'
+    + '<p>Loaded exercise is one of very few things that increases bone density, and for a woman in her thirties '
+    + 'that matters enormously \u2014 you are building the reserve you will draw on decades from now. Strong hips and '
+    + 'hamstrings also mean the everyday moments that ambush a bad back, lifting a box or twisting for a seatbelt, '
+    + 'stop being a gamble.</p></div>';
+
+  h += '<div class="whycard gain"><h3>Endurance you feel outside the gym</h3>'
+    + '<p>Incline walking after the machines builds the aerobic base with almost no impact. Stairs stop being an '
+    + 'event. That is the change most people notice first, and it usually arrives before the scale moves.</p></div>';
+
+  if(heaviest.length){
+    h += '<div class="eyebrow">Your strongest lifts so far</div><table class="ptable"><tbody>';
+    heaviest.slice(0,6).forEach(function(x){
+      h += '<tr><td>'+esc(x.n)+'</td><td class="strong">'+x.l+' lb</td><td>'+x.r+' reps</td></tr>';
+    });
+    h += '</tbody></table>';
+    h += '<div class="footnote">An 85 lb leg curl is not a beginner number. Your legs are genuinely strong \u2014 '
+      + 'it is your upper body that has catching up to do, and that is where the fastest gains are sitting.</div>';
+  }
+
+  var mn = Object.keys(mus).sort(function(a,b){ return mus[b]-mus[a]; });
+  if(mn.length){
+    h += '<div class="eyebrow">Everything you have trained</div><div class="mtags">';
+    mn.forEach(function(n){
+      h += '<span class="mtag">'+esc(n)+' <b>'+Math.round(mus[n])+'</b></span>';
+    });
+    h += '</div><div class="footnote">Numbers are weighted sets. Thin ones are not failures, just the next '
+      + 'thing to feed.</div>';
+  }
+
+  h += '<div class="whycard last"><h3>The honest part</h3>'
+    + '<p>This app cannot make you lose weight. The deficit comes from the kitchen and nothing here touches it. '
+    + 'What it can do is make certain that while the weight comes off you are getting stronger rather than '
+    + 'smaller and weaker \u2014 and give you a record clear enough that on the days it feels like nothing is '
+    + 'happening, you can open it and see that something plainly is.</p></div>';
 
   view.innerHTML = h;
 }
@@ -2588,11 +3205,30 @@ view.addEventListener('click', function(e){
     save(); render();
   }
   else if(a==='kind'){ newKind = b.dataset.v; render(); document.getElementById('newname').focus(); }
+  else if(a==='rec'){ /* handled on input */ }
   else if(a==='back'){ s.back = (s.back===b.dataset.v ? '' : b.dataset.v); save(); render(); }
   else if(a==='form'){ openForm = (openForm===b.dataset.id ? '' : b.dataset.id); render(); }
   else if(a==='rxfocus'){ rxFocus = b.dataset.v; rxPlan = null; render(); }
   else if(a==='rxmin'){ rxMin = +b.dataset.v; rxPlan = null; render(); }
   else if(a==='rxmode'){ rxMode = b.dataset.v; rxPlan = null; render(); }
+  else if(a==='mode'){
+    s.mode = (s.mode === b.dataset.v ? '' : b.dataset.v);
+    save(); render();
+  }
+  else if(a==='nextup'){ nextOpen = !nextOpen; render(); }
+  else if(a==='addnext'){
+    var nm = b.dataset.n, ld = b.dataset.l === '' ? 0 : +b.dataset.l;
+    var kind = guessKind(nm);
+    var it = { id:uid(), name:nm, kind:kind, eq:guessEquip(nm, ld) };
+    if(kind === 'cardio'){ it.minutes = 0; it.incline = 0; it.speed = 0; }
+    else if(kind === 'hold'){ it.sets = [0,0,0]; }
+    else { it.sets = [0,0,0]; it.loads = [ld,ld,ld]; }
+    s.items.push(it);
+    nextOpen = false; save(); render(); toast(nm + ' added');
+  }
+  else if(a==='notetoggle'){ openNote = (openNote===b.dataset.id ? '' : b.dataset.id); render();
+    var nf = document.querySelector('.exnote'); if(nf) nf.focus();
+  }
   else if(a==='finish'){
     reviewFor = (reviewFor === cur ? '' : cur);
     render();
@@ -2733,11 +3369,23 @@ view.addEventListener('input', function(e){
   else if(a==='notes'){ s.notes = el.value; save(); }
   else if(el.id === 'newname'){ renderSuggestions(el.value); }
   else if(a==='coach'){ s.coach = el.value; save(); }
+  else if(a==='rec'){
+    s[el.dataset.k] = el.value === '' ? '' : +el.value;
+    save();
+    var box = document.querySelector('.recov .verdict'), v = recoveryVerdict(s);
+    if(box && v){ box.textContent = v.text; box.className = 'verdict' + (v.warn ? ' warn' : ''); }
+  }
+  else if(a==='exnote'){ find(s, el.dataset.id).note = el.value; save(); }
 });
 
 view.addEventListener('change', function(e){
   var el = e.target, a = el.dataset.act; if(!a) return;
-  if(a==='type'){ session(cur).type = el.value; save(); }
+  if(a==='type'){
+    var ses = session(cur);
+    ses.type = el.value;
+    ses.typeManual = !!el.value;      // blank returns it to automatic
+    save(); render();
+  }
   else if(a==='eq'){ find(session(cur), el.dataset.id).eq = el.value; save(); }
   else if(a==='pickdate'){ if(el.value){ cur = el.value; render(); } }
   else if(a==='pick'){ progressPick = el.value; render(); }
