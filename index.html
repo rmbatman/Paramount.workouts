@@ -27,7 +27,9 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-text-size-adjust:100%}
+html{overflow-x:hidden}
 body{
+  max-width:100%;overflow-x:hidden;
   background:var(--bone);
   color:var(--ink);
   font-family:'Barlow',system-ui,sans-serif;
@@ -35,7 +37,10 @@ body{
   padding-bottom:64px;
   -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:640px;margin:0 auto}
+.wrap{max-width:640px;margin:0 auto;width:100%;overflow-x:hidden}
+main{max-width:100%}
+.card,.drill,.rx,.review,.recov,.guide,.coachbox{max-width:100%;overflow-wrap:anywhere}
+.card-top{flex-wrap:wrap}
 
 /* ---------- masthead ---------- */
 .mast{
@@ -108,7 +113,7 @@ main{padding:14px 14px 40px}
 .sh-stats{display:flex;gap:11px;flex:0 0 auto}
 .sh-stats span{
   font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.08em;
-  text-transform:uppercase;color:rgba(248,248,245,.55);white-space:nowrap;
+  text-transform:uppercase;color:rgba(248,248,245,.55);
 }
 .sh-stats b{color:#fff;font-weight:500;font-size:12px}
 .stackbar{display:flex;gap:2px;height:10px;margin-top:7px;align-items:stretch}
@@ -127,8 +132,8 @@ main{padding:14px 14px 40px}
   font-weight:600;padding-top:4px;
 }
 .card h3{
-  flex:1;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:20px;
-  letter-spacing:.03em;text-transform:uppercase;line-height:1.15;
+  flex:1 1 auto;min-width:0;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:20px;
+  letter-spacing:.03em;text-transform:uppercase;line-height:1.15;overflow-wrap:anywhere;
 }
 .movebtns{display:flex;flex-direction:column;gap:2px;margin-top:1px}
 .movebtn{
@@ -157,6 +162,29 @@ main{padding:14px 14px 40px}
   padding:4px 6px;border-radius:2px;cursor:pointer;line-height:1;margin-top:3px;
 }
 .ssbadge.off{background:transparent;color:var(--steel);border-color:var(--rule)}
+.segrow{display:flex;align-items:center;gap:6px;margin:6px 0 0 22px;flex-wrap:wrap}
+.segrow .segn{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--brass);
+  width:12px;flex:0 0 12px;
+}
+.segrow label{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--steel);
+}
+.segrow .num{width:52px;height:34px}
+.segdel{
+  appearance:none;border:0;background:transparent;color:var(--steel);
+  font-size:17px;line-height:1;padding:2px 4px;cursor:pointer;
+}
+.segdel:hover{color:var(--warn)}
+.segfoot{display:flex;align-items:center;gap:10px;margin:7px 0 2px 22px;flex-wrap:wrap}
+.segadd{
+  appearance:none;border:1px dashed var(--steel);background:transparent;color:var(--steel);
+  border-radius:2px;padding:7px 10px;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
+}
+.segadd:hover{border-color:var(--brass);color:var(--brass)}
+.segtot{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pine);font-weight:600}
 .loadrow{display:flex;align-items:center;gap:6px;margin:8px 0 2px 22px}
 .loadrow label{
   font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.16em;
@@ -231,7 +259,7 @@ input.num:focus{outline:2px solid var(--brass);outline-offset:-1px;border-color:
 .sugg .sname em{font-style:normal;font-weight:600;color:var(--pine);background:#EDE4C6;border-radius:2px}
 .sugg .spat{
   font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--steel);white-space:nowrap;
+  text-transform:uppercase;color:var(--steel);
 }
 .sugg .snew{color:var(--brass)}
 .kindtog{display:flex;gap:0;margin-top:8px}
@@ -474,7 +502,8 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
 .nextrule{font-size:13px;line-height:1.5;color:var(--steel);margin-top:11px;
   padding-top:10px;border-top:1px solid var(--rule)}
 .mobdose{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;
-  letter-spacing:0;text-transform:none;color:var(--steel);white-space:nowrap}
+  letter-spacing:0;text-transform:none;color:var(--steel);
+  display:block;margin-top:2px;overflow-wrap:anywhere}
 .seclabel{
   display:flex;align-items:center;gap:8px;margin:16px 0 8px;
   font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.2em;
@@ -872,7 +901,7 @@ var insertAt = '';
 var rxFocus = 'auto', rxMin = 45, rxMode = 'steady', rxPlan = null, rxOpen = '', rxVariant = 0;
 var saveTimer = null;
 
-var TYPES = ['Pull','Push','Legs — quad','Legs — hamstring/glute','Upper','Full body','Cardio only','Rest'];
+var TYPES = ['Pull','Push','Legs — quad','Legs — hamstring/glute','Upper','Full body','Cardio & core','Cardio only','Rest'];
 
 var LIBRARY = [
 /* back */ 'Lat pull down','Wide grip lat pull down','Close grip lat pull down','Assisted pull up','Pull up','Chin up',
@@ -892,9 +921,9 @@ var LIBRARY = [
 'Standing calf raise','Seated calf raise','Sumo squat','Curtsy lunge',
 /* core */ 'Plank','Side plank','Dead bug','Bird dog','Pallof press','Kneeling ab rollout','Farmer carry',
 'Suitcase carry','Bear crawl','Glute bridge',
-/* cardio */ 'Treadmill','Incline walk','Stationary bike','Elliptical','Stairmaster','Rowing machine','Assault bike'];
+/* cardio */ 'Treadmill','Incline walk','Stationary bike','Stairmaster','Rowing machine'];
 
-var CARDIO_WORDS = ['treadmill','walk','bike','elliptical','run','stair','row erg','cardio'];
+var CARDIO_WORDS = ['treadmill','walk','bike','stair','rowing machine','row erg','rower','elliptical','run','cardio'];
 
 var PLANS = [
   {name:'Pull', tag:'Day 1 · back, rear delts, biceps',
@@ -933,6 +962,30 @@ function session(k){
   if(!state.sessions[k]) state.sessions[k] = { type:'', notes:'', items:[] };
   return state.sessions[k];
 }
+/* Cardio is logged in segments: 10 min at 9.5% and 2.5 mph, then 2 min at 3% and 4 mph.
+   Older entries with a single minutes/incline/speed are read as one segment. */
+function segsOf(it){
+  if(it.segs && it.segs.length) return it.segs;
+  if(it.minutes || it.incline || it.speed){
+    return [{ m:+it.minutes||0, i:+it.incline||0, s:+it.speed||0 }];
+  }
+  return [{ m:0, i:0, s:0 }];
+}
+
+function cardioMins(it){
+  return segsOf(it).reduce(function(a,g){ return a + (+g.m||0); }, 0);
+}
+
+function cardioSummary(it){
+  var segs = segsOf(it).filter(function(g){ return +g.m > 0; });
+  if(!segs.length) return '';
+  return segs.map(function(g){
+    return (+g.m) + ' min'
+      + (g.i ? ' at ' + g.i + '%' : '')
+      + (g.s ? ' \u00b7 ' + g.s + ' mph' : '');
+  }).join('  \u2192  ');
+}
+
 function loadAt(it, i){
   if(it.loads && it.loads[i]!==undefined && it.loads[i]!==null) return +it.loads[i]||0;
   return +it.weight||0;
@@ -2177,7 +2230,7 @@ function overviewStats(days){
     out.weeks[weekKey(k)] = (out.weeks[weekKey(k)] || 0) + 1;
     if(s.mode === 'trainer') out.trainer++;
     (s.items||[]).forEach(function(it){
-      if(it.kind === 'cardio'){ out.cardio += (+it.minutes||0); return; }
+      if(it.kind === 'cardio'){ out.cardio += cardioMins(it); return; }
       if(it.kind === 'prep' || it.kind === 'cool') return;
       if(isPR(it, k)) out.prs++;
       var g = GROUP_OF[moveKey(it.name)];
@@ -2232,7 +2285,7 @@ function totalStats(){
     t.sessions++; t.sets += st.sets; t.vol += st.vol;
     t.weeks[weekKey(k)] = 1;
     (s.items||[]).forEach(function(it){
-      if(it.kind === 'cardio'){ t.cardio += (+it.minutes||0); return; }
+      if(it.kind === 'cardio'){ t.cardio += cardioMins(it); return; }
       if(it.kind === 'prep' || it.kind === 'cool') return;
       if(isPR(it, k)) t.prs++;
     });
@@ -2463,7 +2516,7 @@ function reviewSession(key){
   });
 
   (s.items||[]).forEach(function(it){
-    if(it.kind === 'cardio'){ out.cardio += (+it.minutes||0); return; }
+    if(it.kind === 'cardio'){ out.cardio += cardioMins(it); return; }
     var done = (it.sets||[]).filter(function(r){ return +r>0; });
     if(!done.length){ out.missing.push(it.name); return; }
     if(it.kind === 'hold'){ out.holds += done.length; return; }
@@ -2632,7 +2685,7 @@ function prevPerformance(name, beforeKey){
 
 function summarise(it){
   if(it.kind === 'cardio'){
-    return (it.minutes||0)+' min · incline '+(it.incline||0)+' · '+(it.speed||0)+' mph';
+    return cardioSummary(it) || '—';
   }
   var parts = [], loads = [];
   (it.sets||[]).forEach(function(r,i){
@@ -2814,7 +2867,7 @@ function muscleTally(s){
   var m = {}, reg = {};
   (s.items||[]).forEach(function(it){
     var done = (it.sets||[]).filter(function(r){ return +r>0; }).length;
-    if(it.kind === 'cardio') done = (+it.minutes>0) ? 1 : 0;
+    if(it.kind === 'cardio') done = cardioMins(it) > 0 ? 1 : 0;
     if(!done) return;
     var key = moveKey(it.name), map = MUSCLES[key];
     if(!map) return;
@@ -2973,6 +3026,21 @@ var POOLS = {
     {n:'Pallof press',             role:'core', reps:'10-12 each side'},
     {n:'Bird dog',                 role:'core', reps:'8-10 each side'}
   ],
+  'Cardio & core': [
+    {n:'Incline walk',        role:'cardio', dose:'20 min · 9-11% · 2.3-2.6 mph', mins:20, inc:10, mph:2.4},
+    {n:'Stairmaster',         role:'cardio', dose:'10 min · steady, hands off the rails', mins:10},
+    {n:'Stationary bike',     role:'cardio', dose:'12 min · moderate resistance', mins:12},
+    {n:'Rowing machine',      role:'cardio', dose:'8 min · flat back, drive with the legs', mins:8,
+      note:'legs first, then hips, then arms — never round the back to reach'},
+    {n:'Pallof press',        role:'core',   reps:'12-15 each side'},
+    {n:'Dead bug',            role:'core',   reps:'8-10 each side'},
+    {n:'Bird dog',            role:'core',   reps:'8-10 each side'},
+    {n:'Plank',               role:'core',   reps:'3 × 30-45 sec'},
+    {n:'Side plank',          role:'core',   reps:'20-30 sec each side'},
+    {n:'Glute bridge',        role:'core',   reps:'12-15'},
+    {n:'Farmer carry',        role:'core',   reps:'3 × 30 sec walk'},
+    {n:'Bear crawl',          role:'core',   reps:'3 × 20 sec'}
+  ],
   'Full body': [
     {n:'Lat pull down',            role:'main', reps:'8-12'},
     {n:'Leg press',                role:'main', reps:'10-12'},
@@ -2991,6 +3059,7 @@ var POOLS = {
 };
 
 var FOCUS_GROUPS = {
+  'Cardio & core':['Core'],
   'Pull':['Back','Arms'], 'Push':['Chest','Shoulders','Arms'],
   'Legs — quad':['Legs'], 'Legs — hamstring/glute':['Glutes & hams'],
   'Full body':['Back','Chest','Legs']
@@ -3014,11 +3083,35 @@ function recentBack(){
   return keys.length ? state.sessions[keys[0]].back : '';
 }
 
+function cardioDaysRecently(days){
+  var cutoff = shiftKey(todayKey(), -(days-1)), n = 0;
+  Object.keys(state.sessions).forEach(function(k){
+    if(k < cutoff) return;
+    var s = state.sessions[k];
+    var mins = 0, lifts = 0;
+    (s.items||[]).forEach(function(it){
+      if(it.kind === 'cardio') mins += cardioMins(it);
+      else if(it.kind === 'lift') lifts++;
+    });
+    if(mins >= 20 && lifts <= 2) n++;
+  });
+  return n;
+}
+
 function pickFocus(){
+  /* the trainer's split is four strength days to two cardio days */
+  if(cardioDaysRecently(7) < 2){
+    var strengthThisWeek = 0, cutoff = shiftKey(todayKey(), -6);
+    Object.keys(state.sessions).forEach(function(k){
+      if(k >= cutoff && sessionStats(state.sessions[k]).sets >= 8) strengthThisWeek++;
+    });
+    if(strengthThisWeek >= 2) return 'Cardio & core';
+  }
   var tally = groupTally(10), scored = [];
   Object.keys(POOLS).forEach(function(f){
-    if(f === 'Full body') return;
+    if(f === 'Full body' || f === 'Cardio & core') return;
     var groups = FOCUS_GROUPS[f];
+    if(!groups) return;
     var vol = groups.reduce(function(a,g){ return a + (tally[g]||0); }, 0) / groups.length;
     var rest = daysSince(lastTrained(f));
     if(rest < 2) return;                                   // give it 48 hours
@@ -3114,6 +3207,64 @@ function prescribe(name, mode){
   return { load:out, eq:eq, ps:!!it.ps, why:why };
 }
 
+/* Cardio days run on minutes, not sets — so they get their own builder.
+   Core work here is anti-extension and anti-rotation only. */
+function designCardioDay(opts, mode, flags){
+  var mins = opts.minutes, v = opts.variant || 0;
+  var pool = POOLS['Cardio & core'];
+
+  function rot(list){
+    if(!list.length || !v) return list;
+    var n = v % list.length;
+    return list.slice(n).concat(list.slice(0, n));
+  }
+  var machines = rot(pool.filter(function(x){ return x.role === 'cardio'; }));
+  var cores    = rot(pool.filter(function(x){ return x.role === 'core'; }));
+
+  /* roughly two thirds of the session on the machines */
+  var target = Math.round((mins - 8) * (mode === 'easy' ? 0.5 : 0.62));
+  var blocks = [], used = 0;
+  machines.forEach(function(m){
+    if(used >= target) return;
+    var take = Math.min(m.mins, Math.max(6, target - used));
+    if(take < 5) return;
+    blocks.push({
+      name:m.n, role:'cardio', mins:take,
+      inc:m.inc || 0, mph:m.mph || 0,
+      dose: take + ' min' + (m.inc ? ' \u00b7 ' + m.inc + '% incline \u00b7 ' + m.mph + ' mph' : ' \u00b7 steady'),
+      why: blocks.length === 0
+        ? 'Start here and settle into a rhythm you could hold a conversation at.'
+        : 'A second machine keeps the effort up without pounding the same joints.',
+      note:m.note
+    });
+    used += take;
+  });
+
+  var coreSlots = mode === 'easy' ? 2 : (mins >= 45 ? 4 : 3);
+  cores.slice(0, coreSlots).forEach(function(c){
+    var sets = mode === 'easy' ? 2 : 3;
+    blocks.push({
+      name:c.n, role:'core', sets:sets, reps:c.reps,
+      dose: c.reps.indexOf('\u00d7') > -1 ? c.reps : sets + ' \u00d7 ' + c.reps,
+      why: 'Braced core work \u2014 your trunk resists movement rather than creating it.'
+    });
+  });
+
+  var est = 5 + used + coreSlots * 2.5 + 5;
+  est = Math.round(est);
+  return {
+    focus:'Cardio & core', mode:mode, flags:flags, blocks:blocks,
+    warm:5, cardio:0, cardioDay:true,
+    totalSets: blocks.filter(function(b){ return b.role === 'core'; })
+                     .reduce(function(a,b){ return a + b.sets; }, 0),
+    est:est, variant:v, pool:pool,
+    rest:'30-45 sec between core sets, and no rush between machines',
+    swapped:'Leg raises, reverse crunches and sit-ups are deliberately not here. They load your lower back '
+      + 'in the one direction it likes least. Everything above trains the same muscles with your spine supported.',
+    lastDone: lastTrained('Cardio & core')
+  };
+}
+
 function designSession(opts){
   var focus = opts.focus === 'auto' ? pickFocus() : opts.focus;
   var mode = opts.mode, mins = opts.minutes;
@@ -3139,6 +3290,8 @@ function designSession(opts){
       flags.push('Swapped off hinging to machine-based leg work.');
     }
   }
+
+  if(focus === 'Cardio & core') return designCardioDay(opts, mode, flags);
 
   var pool = (POOLS[focus] || POOLS['Full body']).slice();
   if(mode === 'easy') pool = pool.filter(function(x){ return x.n !== 'Romanian deadlift'; });
@@ -3727,7 +3880,7 @@ function renderLog(){
             : (it.kind==='prep' ? ' prep' : (it.kind==='cool' ? ' cool' : '')));
     if(it.ss) cls += ' ss';
     if((it.kind==='prep' || it.kind==='cool') && it.done) cls += ' done';
-    h += '<div class="card'+cls+'">'
+    h += '<div class="card'+cls+'" data-cid="'+it.id+'">'
       + '<div class="card-top"><div class="idx">'+pad(idx+1)+'</div>'
       + '<h3>'+esc((it.kind==='prep'||it.kind==='cool') ? mobName(it.name) : it.name)
       + ((it.kind==='prep'||it.kind==='cool') && it.detail
@@ -3807,10 +3960,23 @@ function renderLog(){
     }
 
     if(it.kind==='cardio'){
-      h += '<div class="loadrow">'
-        + '<label>Min</label><input class="num" inputmode="decimal" value="'+(it.minutes||'')+'" data-act="f" data-id="'+it.id+'" data-k="minutes">'
-        + '<label>Incline</label><input class="num" inputmode="decimal" value="'+(it.incline||'')+'" data-act="f" data-id="'+it.id+'" data-k="incline">'
-        + '<label>Mph</label><input class="num" inputmode="decimal" value="'+(it.speed||'')+'" data-act="f" data-id="'+it.id+'" data-k="speed">'
+      var segs = segsOf(it);
+      segs.forEach(function(g, gi){
+        h += '<div class="segrow">'
+          + '<span class="segn">'+(gi+1)+'</span>'
+          + '<label>Min</label><input class="num" inputmode="decimal" value="'+(g.m||'')+'" data-act="seg" data-id="'+it.id+'" data-i="'+gi+'" data-k="m">'
+          + '<label>Incl %</label><input class="num" inputmode="decimal" value="'+(g.i||'')+'" data-act="seg" data-id="'+it.id+'" data-i="'+gi+'" data-k="i">'
+          + '<label>Mph</label><input class="num" inputmode="decimal" value="'+(g.s||'')+'" data-act="seg" data-id="'+it.id+'" data-i="'+gi+'" data-k="s">'
+          + (segs.length > 1
+              ? '<button class="segdel" data-act="segdel" data-id="'+it.id+'" data-i="'+gi+'" aria-label="Remove segment '+(gi+1)+'">&times;</button>'
+              : '')
+          + '</div>';
+      });
+      h += '<div class="segfoot">'
+        + '<button class="segadd" data-act="segadd" data-id="'+it.id+'">+ Change of pace</button>'
+        + (cardioMins(it) ? '<span class="segtot">'+cardioMins(it)+' min total</span>' : '')
+        + '</div>';
+      h += '<div class="eqrow" style="margin-top:2px">'
         + '<label>Avg HR</label><input class="num" inputmode="numeric" value="'+(it.hr||'')+'" data-act="f" data-id="'+it.id+'" data-k="hr">'
         + '</div>';
     } else {
@@ -4181,7 +4347,7 @@ function renderWhy(){
   keys.forEach(function(k){
     var s = state.sessions[k], st = sessionStats(s);
     sets += st.sets; reps += st.reps; vol += st.vol;
-    (s.items||[]).forEach(function(it){ if(it.kind==='cardio') cardio += (+it.minutes||0); });
+    (s.items||[]).forEach(function(it){ if(it.kind==='cardio') cardio += cardioMins(it); });
     var m = muscleTally(s).muscles;
     Object.keys(m).forEach(function(n){ mus[n] = (mus[n]||0) + m[n]; });
   });
@@ -4294,7 +4460,7 @@ function renderPlan(){
     + '<div class="sub">from your history, your time, and your back</div>';
 
   h += '<div class="ctrl"><div class="clbl">Focus</div><div class="seg">';
-  [['auto','Decide for me'],['Pull','Pull'],['Push','Push'],['Legs \u2014 quad','Legs'],['Full body','Full']].forEach(function(o){
+  [['auto','Decide for me'],['Pull','Pull'],['Push','Push'],['Legs \u2014 quad','Legs'],['Cardio & core','Cardio'],['Full body','Full']].forEach(function(o){
     h += '<button data-act="rxfocus" data-v="'+esc(o[0])+'" aria-pressed="'+(rxFocus===o[0])+'">'+esc(o[1])+'</button>';
   });
   h += '</div></div>';
@@ -4325,12 +4491,17 @@ function renderPlan(){
     h += '<div class="rxrow"><span class="rxn">\u2014</span><div class="rxbody">'
       + '<div class="rxname">Warm up</div>'
       + '<div class="rxdose">'+r.warm+' min incline walk \u00b7 2.2-2.4 mph</div>'
-      + '<div class="rxwhy">Just enough to raise your temperature. Save the real walking for the end.</div></div></div>';
+      + '<div class="rxwhy">'
+      + (r.cardioDay
+          ? 'Easy pace to start. The work comes next.'
+          : 'Just enough to raise your temperature. Save the real walking for the end.')
+      + '</div></div></div>';
 
     r.blocks.forEach(function(b, i){
-      var dose = b.sets + ' \u00d7 ' + b.reps
-        + (b.load === null ? ' \u2014 find your weight'
-           : (b.load ? ' @ ' + b.load + ' lb' + (b.ps ? ' per side' : '') : ' @ bodyweight'));
+      var dose = b.dose ? b.dose
+        : (b.sets + ' \u00d7 ' + b.reps
+           + (b.load === null ? ' \u2014 find your weight'
+              : (b.load ? ' @ ' + b.load + ' lb' + (b.ps ? ' per side' : '') : ' @ bodyweight')));
       var open = (rxOpen === b.name);
       h += '<div class="rxrow">'
         + '<span class="rxn">'+pad(i+1)+'</span>'
@@ -4348,10 +4519,20 @@ function renderPlan(){
       if(open) h += '<div class="rxform">'+formPanel(b.name)+'</div>';
     });
 
+    if(r.swapped){
+      h += '<div class="rxflag" style="margin-top:10px">'+esc(r.swapped)+'</div>';
+    }
+
     h += '<div class="rxrow"><span class="rxn">\u2014</span><div class="rxbody">'
       + '<div class="rxname">Finish</div>'
-      + '<div class="rxdose">'+r.cardio+' min incline walk \u00b7 9-10% \u00b7 2.3-2.5 mph</div>'
-      + '<div class="rxwhy">Low impact, kind to your spine, and where a real share of the weekly burn comes from.</div></div></div>';
+      + '<div class="rxdose">'
+      + (r.cardioDay ? 'Stretch what feels tight \u00b7 5-8 min' : r.cardio + ' min incline walk \u00b7 9-10% \u00b7 2.3-2.5 mph')
+      + '</div>'
+      + '<div class="rxwhy">'
+      + (r.cardioDay
+          ? 'Hip flexors, hamstrings and calves after walking or stairs. Add the stretch section in the log for the full list.'
+          : 'Low impact, kind to your spine, and where a real share of the weekly burn comes from.')
+      + '</div></div></div>';
 
     h += '</div>'
       + '<button class="btn btn-ghost btn-wide" data-act="rxshuffle" style="margin-bottom:6px">Show me different exercises</button>'
@@ -4363,7 +4544,12 @@ function renderPlan(){
       + 'the next prediction learns from whatever you log.</div>';
   }
 
-  h += '<div class="eyebrow">Rotation \u00b7 5 days, machine-led</div>';
+  h += '<div class="eyebrow">Your week \u00b7 4 strength, 2 cardio</div>'
+    + '<div class="footnote" style="margin-top:0">Pull \u00b7 Legs \u00b7 <strong>Cardio &amp; core</strong> \u00b7 Push \u00b7 '
+    + 'Legs \u00b7 <strong>Cardio &amp; core</strong> \u00b7 rest. Put the cardio days between strength days rather than '
+    + 'back to back, so your legs get a break between the two leg sessions.</div>';
+
+  h += '<div class="eyebrow">Rotation \u00b7 machine-led</div>';
   PLANS.forEach(function(p, i){
     h += '<div class="plan"><h3>'+esc(p.name)+'</h3><div class="tagline">'+esc(p.tag)+'</div><ol>';
     p.items.forEach(function(n){ h += '<li>'+esc(n)+'</li>'; });
@@ -4541,6 +4727,20 @@ view.addEventListener('click', function(e){
     nextOpen = false; save(); render(); toast(nm + ' added');
   }
   else if(a==='ovrange'){ ovRange = +b.dataset.v; render(); }
+  else if(a==='segadd'){
+    var ic = find(s, b.dataset.id);
+    ic.segs = segsOf(ic).slice();
+    var last = ic.segs[ic.segs.length-1] || { m:0, i:0, s:0 };
+    ic.segs.push({ m:0, i:last.i||0, s:last.s||0 });
+    save(); render();
+  }
+  else if(a==='segdel'){
+    var id2 = find(s, b.dataset.id);
+    id2.segs = segsOf(id2).slice();
+    id2.segs.splice(+b.dataset.i, 1);
+    if(!id2.segs.length) id2.segs = [{ m:0, i:0, s:0 }];
+    save(); render();
+  }
   else if(a==='markdeload'){
     s.deload = !s.deload;
     if(s.deload) toast('Deload week set');
@@ -4608,8 +4808,16 @@ view.addEventListener('click', function(e){
   else if(a==='rxload'){
     var r = rxPlan; if(!r) return;
     if(!s.type) s.type = r.focus;
-    s.items.push({ id:uid(), name:'Incline walk', kind:'cardio', minutes:r.warm, incline:9, speed:2.3 });
+    if(!r.cardioDay){
+      s.items.push({ id:uid(), name:'Incline walk', kind:'cardio', minutes:r.warm, incline:9, speed:2.3 });
+    }
     r.blocks.forEach(function(bl){
+      if(bl.role === 'cardio'){
+        s.items.push({ id:uid(), name:bl.name, kind:'cardio',
+                       minutes:bl.mins||0, incline:bl.inc||0, speed:bl.mph||0,
+                       tgt: bl.dose });
+        return;
+      }
       var kind = guessKind(bl.name);
       var it = { id:uid(), name:bl.name, kind:kind, eq:bl.eq, ss:bl.ss||'', ps:!!bl.ps,
                  tgt: bl.sets+' × '+bl.reps+(bl.load ? ' @ '+bl.load+' lb' : '') };
@@ -4620,7 +4828,11 @@ view.addEventListener('click', function(e){
       }
       s.items.push(it);
     });
-    s.items.push({ id:uid(), name:'Incline walk', kind:'cardio', minutes:r.cardio, incline:9, speed:2.4 });
+    if(!r.cardioDay){
+      if(!r.cardioDay){
+      s.items.push({ id:uid(), name:'Incline walk', kind:'cardio', minutes:r.cardio, incline:9, speed:2.4 });
+    }
+    }
     save(); tab = 'log';
     document.querySelectorAll('.tab').forEach(function(t){ t.setAttribute('aria-selected', t.dataset.tab==='log'); });
     render(); window.scrollTo(0,0); toast('Session loaded');
@@ -4726,6 +4938,21 @@ view.addEventListener('input', function(e){
   else if(el.id === 'newname'){ renderSuggestions(el.value); }
   else if(a==='coach'){ s.coach = el.value; save(); }
   else if(a==='setupval'){ find(s, el.dataset.id).setup = el.value; save(); }
+  else if(a==='seg'){
+    var its = find(s, el.dataset.id);
+    its.segs = segsOf(its).slice();
+    var g = its.segs[+el.dataset.i];
+    if(g){
+      g[el.dataset.k] = el.value === '' ? 0 : +el.value;
+      /* the legacy single-value fields stay in step so nothing else breaks */
+      its.minutes = cardioMins(its);
+      its.incline = its.segs[0].i; its.speed = its.segs[0].s;
+    }
+    save();
+    var tot = document.querySelector('.card[data-cid="'+el.dataset.id+'"] .segtot');
+    if(tot) tot.textContent = cardioMins(its) + ' min total';
+    softStats();
+  }
   else if(a==='rec'){
     if(el.dataset.k === 'sleep'){
       s.sleep = parseSleep(el.value);
