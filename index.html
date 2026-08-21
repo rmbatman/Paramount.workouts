@@ -472,6 +472,11 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
 .recov .fld{flex:1;min-width:78px}
 .recov .fld span{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--steel);display:block;margin-bottom:3px}
+.sleepfld .hm{display:flex;align-items:center;gap:3px}
+.sleepfld .hm input{width:100%;min-width:0;text-align:center}
+.sleepfld .hm i{
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-style:normal;color:var(--steel);
+}
 .recov input{width:100%;height:38px;text-align:center;border:1px solid var(--rule);border-radius:2px;
   font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--ink);background:#fff}
 .recov input:focus{outline:2px solid var(--brass);outline-offset:-1px}
@@ -631,8 +636,6 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
 .exnoteline{
   margin:6px 0 0 22px;font-size:13.5px;color:#4A5054;line-height:1.4;font-style:italic;
 }
-
-
 
 
 
@@ -1915,29 +1918,16 @@ function weekKey(k){
   return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
 }
 
-
 /* ============ recovery ============ */
 /* sleep is held as decimal hours but typed however feels natural: 7:13, 7h13, 7.2 or 7 */
-function parseSleep(v){
-  if(v === '' || v === null || v === undefined) return '';
-  var t = String(v).trim().toLowerCase().replace(/\s+/g, '');
-  if(!t) return '';
-  var m = t.match(/^(\d{1,2})[:h.'](\d{1,2})m?$/);      /* 7:13, 7h13, 7.13 as h.mm is ambiguous */
-  if(m && t.indexOf('.') < 0){
-    var hh = +m[1], mm = +m[2];
-    if(mm > 59) return '';
-    return Math.round((hh + mm/60) * 1000) / 1000;
-  }
-  var f = parseFloat(t);
-  if(isNaN(f)) return '';
-  if(f > 24) return Math.round((f/60) * 1000) / 1000;    /* typed it in minutes */
-  return f;
-}
 
-function fmtSleep(dec){
-  if(dec === '' || dec === null || dec === undefined || isNaN(+dec)) return '';
-  var total = Math.round(+dec * 60);
-  return Math.floor(total/60) + ':' + pad(total % 60);
+function sleepH(dec){
+  if(dec === '' || dec === null || dec === undefined || isNaN(+dec) || !+dec) return '';
+  return Math.floor(Math.round(+dec * 60) / 60);
+}
+function sleepM(dec){
+  if(dec === '' || dec === null || dec === undefined || isNaN(+dec) || !+dec) return '';
+  return Math.round(+dec * 60) % 60;
 }
 
 function recoveryVerdict(s){
@@ -3820,8 +3810,11 @@ function renderLog(){
   h += '</div>';
 
   h += '<div class="recov"><div class="lbl">Recovery &mdash; from your ring or watch</div><div class="fields">'
-    + '<div class="fld"><span>Sleep h:mm</span><input type="text" inputmode="numeric" data-act="rec" data-k="sleep" '
-    + 'value="'+fmtSleep(s.sleep)+'" placeholder="7:13"></div>'
+    + '<div class="fld sleepfld"><span>Sleep</span><div class="hm">'
+    + '<input inputmode="numeric" data-act="rec" data-k="sleepH" value="'+sleepH(s.sleep)+'" placeholder="7" aria-label="Sleep hours">'
+    + '<i>h</i>'
+    + '<input inputmode="numeric" data-act="rec" data-k="sleepM" value="'+sleepM(s.sleep)+'" placeholder="13" aria-label="Sleep minutes">'
+    + '<i>m</i></div></div>'
     + '<div class="fld"><span>Readiness</span><input inputmode="numeric" data-act="rec" data-k="ready" value="'+(s.ready||'')+'" placeholder="\u2014"></div>'
     + '<div class="fld"><span>Resting HR</span><input inputmode="numeric" data-act="rec" data-k="rhr" value="'+(s.rhr||'')+'" placeholder="\u2014"></div>'
     + '</div>'
@@ -4954,8 +4947,15 @@ view.addEventListener('input', function(e){
     softStats();
   }
   else if(a==='rec'){
-    if(el.dataset.k === 'sleep'){
-      s.sleep = parseSleep(el.value);
+    if(el.dataset.k === 'sleepH' || el.dataset.k === 'sleepM'){
+      var box = el.closest('.hm');
+      var hEl = box.querySelector('[data-k="sleepH"]');
+      var mEl = box.querySelector('[data-k="sleepM"]');
+      var hh = Math.max(0, Math.min(23, parseInt(hEl.value, 10) || 0));
+      var mm = Math.max(0, Math.min(59, parseInt(mEl.value, 10) || 0));
+      s.sleep = (hh || mm) ? Math.round((hh + mm/60) * 1000) / 1000 : '';
+      /* typing a second digit past 5 in minutes rolls into the hours */
+      if(el.dataset.k === 'sleepM' && parseInt(mEl.value, 10) > 59) mEl.value = '59';
     } else {
       s[el.dataset.k] = el.value === '' ? '' : +el.value;
     }
@@ -5002,9 +5002,6 @@ view.addEventListener('change', function(e){
 view.addEventListener('focusout', function(e){
   var t = e.target;
   if(!t || !t.dataset || !t.dataset.act) return;
-  if(t.dataset.act === 'rec' && t.dataset.k === 'sleep'){
-    t.value = fmtSleep(session(cur).sleep);
-  }
   flush();
   if(t.dataset.act === 'setupval'){ openSetup = ''; render(); return; }
   if(t.dataset.act === 'set' && cur === todayKey() && +t.value > 0 && !rest){
