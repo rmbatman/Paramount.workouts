@@ -638,7 +638,6 @@ select.eqsel:focus{outline:2px solid var(--brass);outline-offset:-1px}
 }
 
 
-
 .rangeseg{display:flex;margin:2px 0 12px}
 .rangeseg button{
   flex:1;background:var(--paper);border:1px solid var(--rule);color:var(--steel);cursor:pointer;
@@ -1727,7 +1726,10 @@ function moveKey(name){
   if(/spinal twist|seated twist|twist/.test(n)) return 'st_twist';
   if(/knees to chest/.test(n)) return 'st_knees';
   if(/rollout|ab wheel/.test(n)) return 'rollout';
-  if(/leg raise|flutter|dead bug|bird dog|pallof|sit ?up|crunch|hollow/.test(n)) return 'core';
+  if(/bear /.test(n)) return 'plank';
+  if(/carry|waiter walk/.test(n)) return 'plank';
+  if(/plank/.test(n)) return 'plank';
+  if(/leg raise|flutter|dead bug|bird dog|pallof|sit ?up|crunch|hollow|butterfly tap|figure ?8|dumbbell pass/.test(n)) return 'core';
   if(/split|lunge|bulgarian/.test(n)) return 'lunge';
   if(/calf/.test(n)) return 'calf';
   if(/leg curl|hamstring curl/.test(n)) return 'legcurl';
@@ -3022,14 +3024,39 @@ var POOLS = {
     {n:'Stationary bike',     role:'cardio', dose:'12 min · moderate resistance', mins:12},
     {n:'Rowing machine',      role:'cardio', dose:'8 min · flat back, drive with the legs', mins:8,
       note:'legs first, then hips, then arms — never round the back to reach'},
-    {n:'Pallof press',        role:'core',   reps:'12-15 each side'},
-    {n:'Dead bug',            role:'core',   reps:'8-10 each side'},
-    {n:'Bird dog',            role:'core',   reps:'8-10 each side'},
-    {n:'Plank',               role:'core',   reps:'3 × 30-45 sec'},
-    {n:'Side plank',          role:'core',   reps:'20-30 sec each side'},
-    {n:'Glute bridge',        role:'core',   reps:'12-15'},
-    {n:'Farmer carry',        role:'core',   reps:'3 × 30 sec walk'},
-    {n:'Bear crawl',          role:'core',   reps:'3 × 20 sec'}
+    /* standing — the safest category for you, so it is the deepest */
+    {n:'Pallof press',            role:'core', fam:'antirot',  reps:'12-15 each side'},
+    {n:'Half-kneeling Pallof press', role:'core', fam:'antirot', reps:'10-12 each side'},
+    {n:'Standing dead bug',       role:'core', fam:'antiext',  reps:'10-12 each side'},
+    {n:'Wide figure 8',           role:'core', fam:'antirot',  reps:'8-10 each way',
+      note:'move the weight around you while your ribs and hips stay still'},
+    {n:'Standing cross crunch',   role:'core', fam:'flexion',  reps:'12-15 each side',
+      note:'standing and unloaded, so keep it small and controlled \u2014 no yanking down'},
+    {n:'Farmer carry',            role:'core', fam:'carry',    reps:'3 \u00d7 30 sec walk'},
+    {n:'Suitcase carry',          role:'core', fam:'carry',    reps:'30 sec each side'},
+    {n:'Waiter carry',            role:'core', fam:'carry',    reps:'20-30 sec each side'},
+
+    /* bear position — anti-extension with the shoulders working too */
+    {n:'Bear hold',               role:'core', fam:'bear',     reps:'3 \u00d7 20-30 sec'},
+    {n:'Bear forward taps',       role:'core', fam:'bear',     reps:'8-10 each side'},
+    {n:'Bear dumbbell slides',    role:'core', fam:'bear',     reps:'8-10 each side',
+      note:'knees hover an inch off the floor, hips dead still while the weight moves'},
+    {n:'Bear shoulder taps',      role:'core', fam:'bear',     reps:'10-12 each side'},
+    {n:'Bear crawl',              role:'core', fam:'bear',     reps:'3 \u00d7 20 sec'},
+
+    /* floor — braced, back supported */
+    {n:'Dead bug',                role:'core', fam:'antiext',  reps:'8-10 each side'},
+    {n:'Dumbbell pass dead bug',  role:'core', fam:'antiext',  reps:'8-10 passes'},
+    {n:'Butterfly taps',          role:'core', fam:'antiext',  reps:'12-15',
+      note:'soles together, lower back pressed flat the whole time'},
+    {n:'Bird dog',                role:'core', fam:'antiext',  reps:'8-10 each side'},
+    {n:'Plank',                   role:'core', fam:'plank',    reps:'3 \u00d7 30-45 sec'},
+    {n:'Plank shoulder taps',     role:'core', fam:'plank',    reps:'10-12 each side'},
+    {n:'Side plank',              role:'core', fam:'plank',    reps:'20-30 sec each side'},
+    {n:'Hollow hold',             role:'core', fam:'antiext',  reps:'3 \u00d7 15-20 sec'},
+    {n:'Glute bridge',            role:'core', fam:'bridge',   reps:'12-15'},
+    {n:'Kneeling ab rollout',     role:'core', fam:'antiext',  reps:'2 \u00d7 8-10',
+      note:'the set ends the moment your lower back sags'}
   ],
   'Full body': [
     {n:'Lat pull down',            role:'main', reps:'8-12'},
@@ -3073,30 +3100,76 @@ function recentBack(){
   return keys.length ? state.sessions[keys[0]].back : '';
 }
 
-function cardioDaysRecently(days){
-  var cutoff = shiftKey(todayKey(), -(days-1)), n = 0;
+/* Which session next.
+   Structure: four strength days to two cardio days, cardio spaced between strength
+   rather than stacked, and no muscle group trained twice inside 48 hours. */
+function sessionCategory(k){
+  var s = state.sessions[k];
+  if(!s || !(s.items||[]).length) return null;
+  if(s.mode === 'rest') return null;
+  var t = (s.typeManual && s.type) ? s.type : (detectType(s).label || s.type || '');
+  if(/cardio/i.test(t)) return 'cardio';
+  return sessionStats(s).sets >= 4 ? 'strength' : null;
+}
+
+function loggedHistory(){
+  return Object.keys(state.sessions).sort().reverse()
+    .map(function(k){ return { k:k, cat:sessionCategory(k) }; })
+    .filter(function(x){ return x.cat; });
+}
+
+function timesDone(focus){
+  var n = 0;
   Object.keys(state.sessions).forEach(function(k){
-    if(k < cutoff) return;
     var s = state.sessions[k];
-    var mins = 0, lifts = 0;
-    (s.items||[]).forEach(function(it){
-      if(it.kind === 'cardio') mins += cardioMins(it);
-      else if(it.kind === 'lift') lifts++;
-    });
-    if(mins >= 20 && lifts <= 2) n++;
+    if(!(s.items||[]).length) return;
+    var t = (s.typeManual && s.type) ? s.type : (detectType(s).label || s.type || '');
+    if(t === focus) n++;
   });
   return n;
 }
 
+function familyOf(focus){
+  if(/pull/i.test(focus)) return 'pull';
+  if(/push/i.test(focus)) return 'push';
+  if(/leg|glute|hamstring|quad/i.test(focus)) return 'legs';
+  if(/cardio/i.test(focus)) return 'cardio';
+  return 'mixed';
+}
+
 function pickFocus(){
-  /* the trainer's split is four strength days to two cardio days */
-  if(cardioDaysRecently(7) < 2){
-    var strengthThisWeek = 0, cutoff = shiftKey(todayKey(), -6);
-    Object.keys(state.sessions).forEach(function(k){
-      if(k >= cutoff && sessionStats(state.sessions[k]).sets >= 8) strengthThisWeek++;
-    });
-    if(strengthThisWeek >= 2) return 'Cardio & core';
+  var hist = loggedHistory();
+  var weekCut = weekKey(todayKey());
+  var cardioThisWeek = 0, strengthThisWeek = 0;
+  hist.forEach(function(x){
+    if(weekKey(x.k) !== weekCut) return;
+    if(x.cat === 'cardio') cardioThisWeek++; else strengthThisWeek++;
+  });
+
+  var lastCardio = null, strengthSinceCardio = 0;
+  for(var i=0;i<hist.length;i++){
+    if(hist[i].cat === 'cardio'){ lastCardio = hist[i].k; break; }
+    strengthSinceCardio++;
   }
+  var cardioRest = lastCardio ? daysSince(lastCardio) : 99;
+  var lastWasCardio = hist.length && hist[0].cat === 'cardio';
+
+  /* cardio has to earn its slot: rested, under quota, and with lifting in between */
+  var cardioAllowed = !lastWasCardio && cardioRest >= 2 && cardioThisWeek < 2
+                      && (strengthSinceCardio >= 1 || !lastCardio);
+  var cardioWanted = cardioAllowed && (
+       (strengthThisWeek >= 2 && cardioThisWeek === 0)
+    || (strengthThisWeek >= 3 && cardioThisWeek < 2)
+    || strengthSinceCardio >= 3
+  );
+  if(cardioWanted) return 'Cardio & core';
+
+  /* legs are legs: a quad day the morning after a hamstring day is still a leg day */
+  var lastStrength = null;
+  for(var q=0;q<hist.length;q++){ if(hist[q].cat === 'strength'){ lastStrength = hist[q].k; break; } }
+  var lastFamily = lastStrength ? familyOf(sessionLabel(state.sessions[lastStrength])) : '';
+  var lastGap = lastStrength ? daysSince(lastStrength) : 99;
+
   var tally = groupTally(10), scored = [];
   Object.keys(POOLS).forEach(function(f){
     if(f === 'Full body' || f === 'Cardio & core') return;
@@ -3104,11 +3177,19 @@ function pickFocus(){
     if(!groups) return;
     var vol = groups.reduce(function(a,g){ return a + (tally[g]||0); }, 0) / groups.length;
     var rest = daysSince(lastTrained(f));
-    if(rest < 2) return;                                   // give it 48 hours
-    scored.push({ f:f, vol:vol, rest:rest });
+    var sameFamily = (familyOf(f) === lastFamily && lastGap < 2);
+    scored.push({ f:f, vol:vol, rest:rest, ready: rest >= 2 && !sameFamily });
   });
-  if(!scored.length) return 'Full body';
-  scored.sort(function(a,b){ return a.vol - b.vol || b.rest - a.rest; });
+  if(!scored.length) return cardioAllowed ? 'Cardio & core' : 'Full body';
+
+  var ready = scored.filter(function(x){ return x.ready; });
+  if(ready.length){
+    ready.sort(function(a,b){ return a.vol - b.vol || b.rest - a.rest; });
+    return ready[0].f;
+  }
+  /* nothing has had its 48 hours — cardio if it is available, otherwise the most rested */
+  if(cardioAllowed) return 'Cardio & core';
+  scored.sort(function(a,b){ return b.rest - a.rest || a.vol - b.vol; });
   return scored[0].f;
 }
 
@@ -3199,56 +3280,114 @@ function prescribe(name, mode){
 
 /* Cardio days run on minutes, not sets — so they get their own builder.
    Core work here is anti-extension and anti-rotation only. */
-function designCardioDay(opts, mode, flags){
-  var mins = opts.minutes, v = opts.variant || 0;
-  var pool = POOLS['Cardio & core'];
-
-  function rot(list){
-    if(!list.length || !v) return list;
-    var n = v % list.length;
-    return list.slice(n).concat(list.slice(0, n));
-  }
-  var machines = rot(pool.filter(function(x){ return x.role === 'cardio'; }));
-  var cores    = rot(pool.filter(function(x){ return x.role === 'core'; }));
-
-  /* roughly two thirds of the session on the machines */
-  var target = Math.round((mins - 8) * (mode === 'easy' ? 0.5 : 0.62));
-  var blocks = [], used = 0;
-  machines.forEach(function(m){
-    if(used >= target) return;
-    var take = Math.min(m.mins, Math.max(6, target - used));
-    if(take < 5) return;
-    blocks.push({
-      name:m.n, role:'cardio', mins:take,
-      inc:m.inc || 0, mph:m.mph || 0,
-      dose: take + ' min' + (m.inc ? ' \u00b7 ' + m.inc + '% incline \u00b7 ' + m.mph + ' mph' : ' \u00b7 steady'),
-      why: blocks.length === 0
-        ? 'Start here and settle into a rhythm you could hold a conversation at.'
-        : 'A second machine keeps the effort up without pounding the same joints.',
-      note:m.note
+/* what core work the last few cardio days already used */
+function recentCoreWork(n){
+  var out = [], seen = 0;
+  Object.keys(state.sessions).sort().reverse().forEach(function(k){
+    if(seen >= n) return;
+    var s = state.sessions[k];
+    if(!(s.items||[]).length) return;
+    var t = (s.typeManual && s.type) ? s.type : (detectType(s).label || s.type || '');
+    if(!/cardio/i.test(t)) return;
+    seen++;
+    (s.items||[]).forEach(function(it){
+      if(it.kind !== 'cardio' && it.kind !== 'prep' && it.kind !== 'cool') out.push(it.name);
     });
-    used += take;
+  });
+  return out;
+}
+
+function designCardioDay(opts, mode, flags){
+  var mins = opts.minutes;
+  var pool = POOLS['Cardio & core'];
+  var machines = pool.filter(function(x){ return x.role === 'cardio'; });
+  var cores    = pool.filter(function(x){ return x.role === 'core'; });
+
+  /* rotate on its own, so consecutive cardio days are not identical */
+  var v = (opts.variant || 0) + timesDone('Cardio & core');
+  function rot(list){ return list.length ? list.slice(v % list.length).concat(list.slice(0, v % list.length)) : list; }
+  machines = rot(machines);
+  cores = rot(cores);
+
+  /* one machine carries the session. Steady-state work wants a single sustained
+     effort, not three short ones — swapping machines every six minutes keeps
+     restarting the warm-up rather than accumulating any real aerobic time. */
+  var primary = machines[0];
+  var blocks = [], used = 0;
+
+  var target = Math.round((mins - 10) * (mode === 'easy' ? 0.5 : 0.62));
+  var ramp = 5;
+  var work = Math.max(10, target - ramp);
+
+  blocks.push({
+    name: primary.n, role:'cardio', mins: ramp,
+    inc: primary.inc ? Math.max(1, Math.round(primary.inc * 0.4)) : 0,
+    mph: primary.mph || 0,
+    dose: ramp + ' min easy' + (primary.inc ? ' \u00b7 ' + Math.max(1, Math.round(primary.inc*0.4)) + '% incline' : ''),
+    why: 'Ramp up on the machine you are about to work on. No separate warm-up needed \u2014 this is it.'
   });
 
-  var coreSlots = mode === 'easy' ? 2 : (mins >= 45 ? 4 : 3);
-  cores.slice(0, coreSlots).forEach(function(c){
+  blocks.push({
+    name: primary.n, role:'cardio', mins: work,
+    inc: primary.inc || 0, mph: primary.mph || 0,
+    dose: work + ' min' + (primary.inc ? ' \u00b7 ' + primary.inc + '% incline \u00b7 ' + primary.mph + ' mph' : ' \u00b7 steady'),
+    why: 'One sustained effort at a pace you could just about hold a conversation at. '
+       + 'This is where the aerobic work actually happens.',
+    note: primary.note
+  });
+  used = ramp + work;
+
+  /* a second machine only earns a place in a long session, and only as a finisher */
+  if(mins >= 60 && machines[1] && mode !== 'easy'){
+    var fin = Math.min(8, Math.max(5, target - used));
+    if(fin >= 5){
+      blocks.push({
+        name: machines[1].n, role:'cardio', mins: fin,
+        inc: machines[1].inc || 0, mph: machines[1].mph || 0,
+        dose: fin + ' min' + (machines[1].inc ? ' \u00b7 ' + machines[1].inc + '% incline' : ' \u00b7 steady'),
+        why: 'A short finisher on a different machine \u2014 different muscles, and it stops the hour dragging.'
+      });
+      used += fin;
+    }
+  }
+
+  var coreSlots = mode === 'easy' ? 3 : (mins >= 60 ? 5 : (mins >= 45 ? 4 : 3));
+
+  /* skip what came up last time, and take one from each family so a session
+     is not four versions of the same idea */
+  var recent = recentCoreWork(2);
+  var fresh = cores.filter(function(c){ return recent.indexOf(c.n) < 0; });
+  if(fresh.length >= coreSlots) cores = fresh;
+
+  var chosen = [], famUsed = {};
+  cores.forEach(function(c){
+    if(chosen.length >= coreSlots) return;
+    var f = c.fam || 'other';
+    if(famUsed[f]) return;
+    famUsed[f] = 1; chosen.push(c);
+  });
+  cores.forEach(function(c){
+    if(chosen.length >= coreSlots) return;
+    if(chosen.indexOf(c) < 0) chosen.push(c);
+  });
+
+  chosen.forEach(function(c){
     var sets = mode === 'easy' ? 2 : 3;
     blocks.push({
       name:c.n, role:'core', sets:sets, reps:c.reps,
       dose: c.reps.indexOf('\u00d7') > -1 ? c.reps : sets + ' \u00d7 ' + c.reps,
-      why: 'Braced core work \u2014 your trunk resists movement rather than creating it.'
+      why: 'Braced core work \u2014 your trunk resists movement rather than creating it.',
+      note: c.note
     });
   });
 
-  var est = 5 + used + coreSlots * 2.5 + 5;
-  est = Math.round(est);
   return {
     focus:'Cardio & core', mode:mode, flags:flags, blocks:blocks,
-    warm:5, cardio:0, cardioDay:true,
+    warm:0, cardio:0, cardioDay:true, primary:primary.n,
     totalSets: blocks.filter(function(b){ return b.role === 'core'; })
                      .reduce(function(a,b){ return a + b.sets; }, 0),
-    est:est, variant:v, pool:pool,
-    rest:'30-45 sec between core sets, and no rush between machines',
+    est: Math.round(used + coreSlots * 2.5 + 6), variant:v, pool:pool,
+    rest:'30-45 sec between core sets. The machine work is continuous \u2014 no stopping between the two blocks.',
     swapped:'Leg raises, reverse crunches and sit-ups are deliberately not here. They load your lower back '
       + 'in the one direction it likes least. Everything above trains the same muscles with your spine supported.',
     lastDone: lastTrained('Cardio & core')
@@ -3288,7 +3427,7 @@ function designSession(opts){
 
   /* rotate within each role so a rebuild surfaces genuinely different work,
      while keeping compounds ahead of accessories and core at the end */
-  var v = opts.variant || 0;
+  var v = (opts.variant || 0) + timesDone(focus);
   function rotate(list){
     if(!list.length || !v) return list;
     var n = v % list.length;
@@ -4481,6 +4620,7 @@ function renderPlan(){
 
     r.flags.forEach(function(f){ h += '<div class="rxflag">'+esc(f)+'</div>'; });
 
+    if(!r.cardioDay)
     h += '<div class="rxrow"><span class="rxn">\u2014</span><div class="rxbody">'
       + '<div class="rxname">Warm up</div>'
       + '<div class="rxdose">'+r.warm+' min incline walk \u00b7 2.2-2.4 mph</div>'
