@@ -1022,9 +1022,29 @@ function esc(s){ return String(s).replace(/[&<>"']/g, function(c){
 function uid(){ return 'x'+Math.random().toString(36).slice(2,9); }
 var HOLD_WORDS = ['plank','hold','dead hang','wall sit'];
 function guessKind(name){
-  var n = name.toLowerCase(), i;
-  for(i=0;i<CARDIO_WORDS.length;i++){ if(n.indexOf(CARDIO_WORDS[i])>-1) return 'cardio'; }
-  for(i=0;i<HOLD_WORDS.length;i++){ if(n.indexOf(HOLD_WORDS[i])>-1) return 'hold'; }
+  var n = (name||'').toLowerCase(), i;
+  /* match whole words: "crunch" contains "run", "trunk" contains "run" */
+  var words = n.split(/[^a-z0-9]+/).filter(Boolean);
+  function hasWord(w){ return words.indexOf(w) > -1; }
+  function hasPhrase(p){ return n.indexOf(p) > -1; }
+
+  /* a lifting word wins outright: "walking lunges" is a leg exercise, not a walk */
+  var LIFT_WORDS = ['lunge','lunges','squat','squats','press','row','rows','curl','curls','raise','raises',
+    'extension','fly','flies','crossover','pulldown','pushdown','deadlift','thrust','shrug','dip','dips',
+    'pushup','pushups','crunch','crunches','rollout','bridge','abduction','adduction','kickback','taps','slides'];
+  for(i=0;i<LIFT_WORDS.length;i++){ if(hasWord(LIFT_WORDS[i])) return 'lift'; }
+
+  for(i=0;i<CARDIO_WORDS.length;i++){
+    var c = CARDIO_WORDS[i];
+    if(c.indexOf(' ') > -1){ if(hasPhrase(c)) return 'cardio'; continue; }
+    if(hasWord(c)) return 'cardio';
+    /* a word that starts with it: stairmaster, running, treadmills */
+    for(var q=0;q<words.length;q++){ if(words[q].indexOf(c) === 0) return 'cardio'; }
+  }
+  for(i=0;i<HOLD_WORDS.length;i++){
+    var hw = HOLD_WORDS[i];
+    if(hw.indexOf(' ') > -1 ? hasPhrase(hw) : hasWord(hw)) return 'hold';
+  }
   return 'lift';
 }
 function session(k){
@@ -2785,8 +2805,18 @@ function detectType(s){
       : { label:'', detail:'', regions:{}, muscles:{} };
   }
 
+  /* how much of this session was actually the machines */
+  var cardioMin = 0;
+  (s.items||[]).forEach(function(it){ if(it.kind === 'cardio') cardioMin += cardioMins(it); });
+
   var label;
-  if(up/tot >= 0.20 && lo/tot >= 0.20){
+  /* core first: a session that is mostly trunk work is a core session, whatever
+     incidental glute or shoulder support the holds picked up along the way */
+  if(core > up * 1.2 && core > lo * 1.2){
+    label = cardioMin >= 8 ? 'Cardio & core' : 'Core';
+  } else if(cardioMin >= 15 && core >= (up + lo)){
+    label = 'Cardio & core';
+  } else if(up/tot >= 0.20 && lo/tot >= 0.20){
     label = 'Full body';
   } else if(lo > up){
     var quad = reg['Legs'] || 0, post = (reg['Glutes']||0) + (reg['Hamstrings']||0);
@@ -3003,7 +3033,7 @@ function sessionCategory(k){
   if(s.mode === 'rest') return null;
   var t = (s.typeManual && s.type) ? s.type : (detectType(s).label || s.type || '');
   if(/cardio/i.test(t)) return 'cardio';
-  return sessionStats(s).sets >= 4 ? 'strength' : null;
+  return sessionStats(s).sets >= 1 ? 'strength' : null;
 }
 
 function loggedHistory(){
@@ -3048,8 +3078,12 @@ function pickFocus(){
   var cardioRest = lastCardio ? daysSince(lastCardio) : 99;
   var lastWasCardio = hist.length && hist[0].cat === 'cardio';
 
+  /* a core-only day counts as core work too, so do not stack another on top of it */
+  var lastLabel = hist.length ? sessionLabel(state.sessions[hist[0].k]) : '';
+  var lastWasCore = /core/i.test(lastLabel) && daysSince(hist.length ? hist[0].k : todayKey()) < 2;
+
   /* cardio has to earn its slot: rested, under quota, and with lifting in between */
-  var cardioAllowed = !lastWasCardio && cardioRest >= 2 && cardioThisWeek < 2
+  var cardioAllowed = !lastWasCardio && !lastWasCore && cardioRest >= 2 && cardioThisWeek < 2
                       && (strengthSinceCardio >= 1 || !lastCardio);
   var cardioWanted = cardioAllowed && (
        (strengthThisWeek >= 2 && cardioThisWeek === 0)
